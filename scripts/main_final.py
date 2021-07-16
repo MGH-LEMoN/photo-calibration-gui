@@ -43,12 +43,13 @@ def click(event):
     """ replacement mouse handler inside Canvas, draws a red ball on each click"""
 
     print("Canvas: mouse clicked at ", event.x, event.y)
-    pos_tuple.append([event.x, event.y])
+
+    pos_tuple.append([event.x * scale_up_factor, event.y * scale_up_factor])
 
 
 def loadImage():
     canvas.image = filename  # <--- keep reference of your image
-    canvas.create_image(25, 0, anchor='nw', image=filename)
+    canvas.create_image(0, 0, anchor='nw', image=filename)
     canvas.pack()
 
 
@@ -58,7 +59,7 @@ def show_entry_fields():
 
     print("Width: %s\tHeight: %s" % (true_w, true_h))
     centers, radii = calculate_centers_and_radii(pos_tuple)
-    registration(centers, radii, true_w, true_h)
+    registration(centers, radii, float(true_w), float(true_h))
 
 
 if __name__ == "__main__":
@@ -67,11 +68,23 @@ if __name__ == "__main__":
 
     img = Image.open(os.path.join(os.getcwd(), 'data', 'template_1.png'))
     width, height = img.width, img.height
-    img = img.resize((width // 5, height // 5), Image.ANTIALIAS)
-    filename = ImageTk.PhotoImage(img)
-    canvas = Canvas(height=height // 4, width=width // 4)
+    print(f"Image Width: {width}, Height: {height}")
 
-    root.geometry(f'{width // 4:d}x{height // 4:d}')
+    scale_down_factor = 0.2  # Should be between 0 and 1
+    scale_up_factor = np.reciprocal(scale_down_factor)
+
+    new_im_width = int(width * scale_down_factor) 
+    new_im_height = int(height * scale_down_factor)
+
+    canvas_width = int(width * (scale_down_factor + 0.05))
+    canvas_height = int(height * (scale_down_factor + 0.05))
+
+    img = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
+    
+    filename = ImageTk.PhotoImage(img)
+    canvas = Canvas(height=canvas_height, width=canvas_width)
+
+    root.geometry(f'{canvas_width:d}x{canvas_height:d}')
 
     b = Button(root,
                text='Please Click here to upload the reference image',
