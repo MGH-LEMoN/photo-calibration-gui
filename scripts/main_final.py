@@ -1,18 +1,48 @@
 import os
 from tkinter import *
 from PIL import ImageTk, Image
+import numpy as np
 
 
 global pos_tuple
 pos_tuple = []
 
 
+def get_euclidean(a, b):
+    a = np.array(a)
+    b = np.array(b)
+
+    return np.linalg.norm(a - b)
+
+
+def get_radii(point_pairs):
+    return [get_euclidean(pair[0], pair[1]) for pair in point_pairs] 
+
+
+def get_pairs(point_list):
+    n = 2
+    return [point_list[i:i+n] for i in range(0, len(point_list)-n+1, n)]
+
+
+def calculate_centers_and_radii(mouse_clicks):
+    centers = mouse_clicks[::2]
+    point_set = get_pairs(mouse_clicks)
+    radii = get_radii(point_set)
+
+    centers = np.array(centers)
+    radii = np.array(radii)
+
+    for idx, (center, radius) in enumerate(zip(centers, radii)):
+        print(f"Center {idx}: {(center[0], center[1])}, Radius: {radius:.2f}")
+
+    return centers, radii
+
+
 def click(event):
     """ replacement mouse handler inside Canvas, draws a red ball on each click"""
 
     print ("Canvas: mouse clicked at ", event.x, event.y)
-    pos_tuple.append((event.x, event.y))
-    print(pos_tuple)
+    pos_tuple.append([event.x, event.y])
 
 
 def loadImage():
@@ -23,6 +53,7 @@ def loadImage():
 
 def show_entry_fields():
     print("Width: %s\tHeight: %s" % (e1.get(), e2.get()))
+    calculate_centers_and_radii(pos_tuple)
 
 
 if __name__ == "__main__":
@@ -31,9 +62,9 @@ if __name__ == "__main__":
 
     img = Image.open(os.path.join(os.getcwd(), 'data', 'template_1.png'))
     width, height = img.width, img.height
-    img = img.resize((width // 6, height // 6), Image.ANTIALIAS)
+    img = img.resize((width // 5, height // 5), Image.ANTIALIAS)
     filename = ImageTk.PhotoImage(img)
-    canvas = Canvas(height=height // 5, width=width // 5)
+    canvas = Canvas(height=height // 4, width=width // 4)
 
     root.geometry(f'{width // 4:d}x{height // 4:d}')
 
