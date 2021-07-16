@@ -2,7 +2,7 @@ import os
 from tkinter import *
 from PIL import ImageTk, Image
 import numpy as np
-
+from registration import registration
 
 global pos_tuple
 pos_tuple = []
@@ -53,7 +53,8 @@ def loadImage():
 
 def show_entry_fields():
     print("Width: %s\tHeight: %s" % (e1.get(), e2.get()))
-    calculate_centers_and_radii(pos_tuple)
+    centers, radii, true_w, true_h = calculate_centers_and_radii(pos_tuple)
+    registration(centers, radii, true_w, true_h)
 
 
 if __name__ == "__main__":
