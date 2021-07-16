@@ -1,7 +1,8 @@
 import os
 from tkinter import *
-from PIL import ImageTk, Image
+
 import numpy as np
+from PIL import Image, ImageTk
 from registration import registration
 
 global pos_tuple
@@ -16,12 +17,12 @@ def get_euclidean(a, b):
 
 
 def get_radii(point_pairs):
-    return [get_euclidean(pair[0], pair[1]) for pair in point_pairs] 
+    return [get_euclidean(pair[0], pair[1]) for pair in point_pairs]
 
 
 def get_pairs(point_list):
     n = 2
-    return [point_list[i:i+n] for i in range(0, len(point_list)-n+1, n)]
+    return [point_list[i:i + n] for i in range(0, len(point_list) - n + 1, n)]
 
 
 def calculate_centers_and_radii(mouse_clicks):
@@ -41,19 +42,22 @@ def calculate_centers_and_radii(mouse_clicks):
 def click(event):
     """ replacement mouse handler inside Canvas, draws a red ball on each click"""
 
-    print ("Canvas: mouse clicked at ", event.x, event.y)
+    print("Canvas: mouse clicked at ", event.x, event.y)
     pos_tuple.append([event.x, event.y])
 
 
 def loadImage():
     canvas.image = filename  # <--- keep reference of your image
-    canvas.create_image(25,0,anchor='nw',image=filename)
+    canvas.create_image(25, 0, anchor='nw', image=filename)
     canvas.pack()
 
 
 def show_entry_fields():
-    print("Width: %s\tHeight: %s" % (e1.get(), e2.get()))
-    centers, radii, true_w, true_h = calculate_centers_and_radii(pos_tuple)
+    true_w = e1.get()
+    true_h = e2.get()
+
+    print("Width: %s\tHeight: %s" % (true_w, true_h))
+    centers, radii = calculate_centers_and_radii(pos_tuple)
     registration(centers, radii, true_w, true_h)
 
 
@@ -69,11 +73,13 @@ if __name__ == "__main__":
 
     root.geometry(f'{width // 4:d}x{height // 4:d}')
 
-    b = Button(root, text='Please Click here to upload the reference image', command=loadImage)
+    b = Button(root,
+               text='Please Click here to upload the reference image',
+               command=loadImage)
     b.pack(side=TOP)
 
     wFrame = Frame(root)
-    w = Label(wFrame, text = "Width: ") #.grid(row=0)
+    w = Label(wFrame, text="Width: ")  #.grid(row=0)
     e1 = Entry(wFrame)
 
     wFrame.pack(side=BOTTOM)
@@ -81,7 +87,7 @@ if __name__ == "__main__":
     e1.pack(side=LEFT)
 
     hFrame = Frame(root)
-    h = Label(hFrame, text = "Height: ") #.grid(row=0)
+    h = Label(hFrame, text="Height: ")  #.grid(row=0)
     e2 = Entry(hFrame)
 
     hFrame.pack(side=BOTTOM)
@@ -89,7 +95,9 @@ if __name__ == "__main__":
     e2.pack(side=LEFT)
 
     calibFrame = Frame(root)
-    b1 = Button(calibFrame, text='Perform Calibration', command=show_entry_fields)
+    b1 = Button(calibFrame,
+                text='Perform Calibration',
+                command=show_entry_fields)
     calibFrame.pack(side=BOTTOM)
     b1.pack()
 
