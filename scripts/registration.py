@@ -24,11 +24,11 @@ def registration(centers, radii, true_width, true_height):
     # true_height = 80  # in mm
 
     centers = centers
-    radii = radii
+    radii = radii * 0.9 # we don't want to detect keypoints on the circule
     true_width = true_width
     true_height = true_height
     template = cv2.imread(
-        './data/template.jpg',
+        './data/template_1.png',
         cv2.IMREAD_GRAYSCALE)  # SIFT operates in gray scale...
 
     # Read in new image to process
