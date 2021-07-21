@@ -1,5 +1,7 @@
 import os
 from tkinter import *
+from tkinter.ttk import *
+from tkinter.filedialog import askopenfile
 
 import numpy as np
 from PIL import Image, ImageTk
@@ -54,12 +56,15 @@ def loadImage():
 
 
 def show_entry_fields():
+    global root
     true_w = e1.get()
     true_h = e2.get()
 
     print("Width: %s\tHeight: %s" % (true_w, true_h))
     centers, radii = calculate_centers_and_radii(pos_tuple)
     registration(centers, radii, float(true_w), float(true_h))
+
+    root.quit()
 
 
 if __name__ == "__main__":
