@@ -117,8 +117,6 @@ def perform_calibration():
 
 
 def showimage():
-    clearFrame(frm)
-
     global fln
     global canvas
 
@@ -147,34 +145,37 @@ def showimage():
     # print image on canvas/gui
     img = ImageTk.PhotoImage(img)
 
-    root.geometry("")
+    # Clear canvas for the next screen
+    clearFrame(canvas1)
+
+    # New canvas
     canvas = Canvas(height=new_im_height, width=new_im_width)
     canvas.image = img
     canvas.create_image(0, 0, anchor='nw', image=img)
     canvas.pack()
 
-    wFrame = Frame(root)
-    w = Label(wFrame, text="Width: ")  #.grid(row=0)
-    global e1
-    e1 = Entry(wFrame)
+    frame = Frame(root)
+    frame.pack()
 
-    wFrame.pack(side=BOTTOM)
+    w = Label(frame, text="Width: ", font=('Cambria', 10, 'bold'))
+    global e1
+    e1 = Entry(frame, width = 10)
+
     w.pack(side=LEFT)
     e1.pack(side=LEFT)
 
-    hFrame = Frame(root)
-    h = Label(hFrame, text="Height: ")  #.grid(row=0)
+    h = Label(frame, text="Height: ", font=('Cambria', 10, 'bold'))
     global e2
-    e2 = Entry(hFrame)
+    e2 = Entry(frame, width=10)
 
-    hFrame.pack(side=BOTTOM)
     h.pack(side=LEFT)
     e2.pack(side=LEFT)
 
     calibFrame = Frame(root)
     b1 = Button(calibFrame,
                 text='Perform Calibration',
-                command=perform_calibration)
+                command=perform_calibration,
+                 bg='brown', fg='white', font=('cambria', 9, 'bold'))
     calibFrame.pack(side=BOTTOM)
     b1.pack()
 
@@ -183,14 +184,45 @@ def showimage():
 
 if __name__ == '__main__':
     root = Tk()
-
-    # Frame for Upload Image button
-    frm = Frame(root)
-    frm.pack(side=TOP)
-
-    btn = Button(frm, text='Browse Image', command=showimage)
-    btn.pack(side=LEFT)
-
     root.title('Photo Calibration GUI')
-    root.geometry('250x250')
+
+    # Create canvas for widgets
+    canvas1 = Canvas(root, width = 350, height = 350)
+    canvas1.pack()
+
+    label1 = Label(root, text='Welcome to the Photo Calibration GUI')
+    label1.config(font=('cambria', 14))
+    canvas1.create_window(175, 25, window=label1)
+
+    label_inst = Label(root, text='!!! Instructions !!!')
+    label_inst.config(font=('cambria', 12, 'bold'))
+    canvas1.create_window(175, 60, window=label_inst)
+
+    inst_1 = Label(root, text='1. Upload the template using the button below')
+    inst_1.config(font=('cambria', 10))
+    canvas1.create_window(175, 80, window=inst_1)
+
+    inst_2 = Label(root, text='2. You will see 4 card suits surrounded by circles')
+    inst_2.config(font=('cambria', 10))
+    canvas1.create_window(175, 100, window=inst_2)
+
+    inst_3 = Label(root, wraplength=325, text='3. Starting at the NW corner, click on the center of the suit followed by another click on the edge')
+    inst_3.config(font=('cambria', 10))
+    canvas1.create_window(175, 130, window=inst_3)
+
+    inst_4 = Label(root, wraplength=325, text='4. The order should be NW, SE, SW and SE')
+    inst_4.config(font=('cambria', 10))
+    canvas1.create_window(175, 160, window=inst_4)
+
+    inst_5 = Label(root, wraplength=325, text='5. Enter width and height (in mm) in the entry fields')
+    inst_5.config(font=('cambria', 10))
+    canvas1.create_window(175, 185, window=inst_5)
+
+    inst_6 = Label(root, wraplength=325, text='6. Click on Perform Calibration and wait until the program quits automatically')
+    inst_6.config(font=('cambria', 10))
+    canvas1.create_window(175, 220, window=inst_6)
+    
+    btn = Button(text='Browse Image', command=showimage, bg='brown', fg='white', font=('cambria', 9, 'bold'))
+    canvas1.create_window(175, 275, window=btn)
+
     root.mainloop()
