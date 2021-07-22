@@ -2,15 +2,16 @@ import cv2
 import numpy as np
 
 
-def registration(centers, radii, true_width, true_height):
+def registration(centers, radii, true_width, true_height, template_path):
 
     assert isinstance(centers, np.ndarray)
     assert isinstance(radii, np.ndarray)
 
-    print(centers)
-    print(radii)
-    print(true_width)
-    print(true_height)
+    print(centers, type(centers))
+    print(radii, type(radii))
+    print(true_width, type(true_width))
+    print(true_height, type(true_height))
+    print(template_path, type(template_path))
 
     # Constants
     DEBUG = True
@@ -27,9 +28,7 @@ def registration(centers, radii, true_width, true_height):
     radii = radii * 0.9 # we don't want to detect keypoints on the circule
     true_width = true_width
     true_height = true_height
-    template = cv2.imread(
-        './data/template_1.png',
-        cv2.IMREAD_GRAYSCALE)  # SIFT operates in gray scale...
+    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)  # SIFT operates in gray scale...
 
     # Read in new image to process
     target = cv2.imread('./data/test.jpg', cv2.IMREAD_GRAYSCALE)
