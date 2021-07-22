@@ -1,7 +1,7 @@
 import os
 from tkinter import *
-from tkinter.ttk import *
 from tkinter.filedialog import askopenfile
+from tkinter.ttk import *
 
 import numpy as np
 from PIL import Image, ImageTk
@@ -78,14 +78,14 @@ if __name__ == "__main__":
     scale_down_factor = 0.2  # Should be between 0 and 1
     scale_up_factor = np.reciprocal(scale_down_factor)
 
-    new_im_width = int(width * scale_down_factor) 
+    new_im_width = int(width * scale_down_factor)
     new_im_height = int(height * scale_down_factor)
 
     canvas_width = int(width * (scale_down_factor + 0.05))
     canvas_height = int(height * (scale_down_factor + 0.05))
 
     img = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
-    
+
     filename = ImageTk.PhotoImage(img)
     canvas = Canvas(height=canvas_height, width=canvas_width)
 

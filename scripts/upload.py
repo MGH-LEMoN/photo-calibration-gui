@@ -1,9 +1,10 @@
 import os
+import tkinter
 from tkinter import *
 from tkinter import filedialog
-import tkinter
-from PIL import Image, ImageTk
+
 import numpy as np
+from PIL import Image, ImageTk
 from registration import registration
 
 global pos_tuple
@@ -11,18 +12,23 @@ pos_tuple = []
 
 
 def click(event):
-    """ replacement mouse handler inside Canvas, draws a red ball on each click"""
+    """ replacement mouse handler inside Canvas, draws a blue ball on each click"""
 
     print("Canvas: mouse clicked at ", event.x, event.y)
 
     pos_tuple.append([event.x * scale_up_factor, event.y * scale_up_factor])
 
+    python_green = "#476042"
+    x1, y1 = (event.x - 1), (event.y - 1)
+    x2, y2 = (event.x + 1), (event.y + 1)
+    canvas.create_oval(x1, y1, x2, y2, outline='blue', fill='blue', width=5)
+
 
 def clearFrame(frame):
     # destroy all widgets from frame
     for widget in frame.winfo_children():
-       widget.destroy()
-    
+        widget.destroy()
+
     # this will clear frame and frame will be empty
     # if you want to hide the empty panel then
     frame.pack_forget()
@@ -72,12 +78,15 @@ def show_entry_fields():
 
 def showimage():
     clearFrame(frm)
-    
+
     global fln
-    fln = filedialog.askopenfilename(initialdir=os.getcwd(), title='Select Image File',
-    filetypes=[('All Files', '*.*')])
+    global canvas
+
+    fln = filedialog.askopenfilename(initialdir=os.getcwd(),
+                                     title='Select Image File',
+                                     filetypes=[('All Files', '*.*')])
     img = Image.open(fln)
-    
+
     width, height = img.width, img.height
     print(f"Image Width: {width}, Height: {height}")
 
@@ -86,7 +95,7 @@ def showimage():
     global scale_up_factor
     scale_up_factor = np.reciprocal(scale_down_factor)
 
-    new_im_width = int(width * scale_down_factor) 
+    new_im_width = int(width * scale_down_factor)
     new_im_height = int(height * scale_down_factor)
 
     # canvas_width = int(width * (scale_down_factor + 0.05))
@@ -95,8 +104,13 @@ def showimage():
     img = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
 
     img = ImageTk.PhotoImage(img)
-    lbl.configure(image=img)
-    lbl.image = img
+    canvas = Canvas(height=new_im_height, width=new_im_width)
+    canvas.image = img
+    canvas.create_image(0, 0, anchor='nw', image=img)
+    canvas.pack()
+
+    # lbl.configure(image=img)
+    # lbl.image = img
 
     wFrame = Frame(root)
     w = Label(wFrame, text="Width: ")  #.grid(row=0)
@@ -123,7 +137,7 @@ def showimage():
     calibFrame.pack(side=BOTTOM)
     b1.pack()
 
-    lbl.bind("<Button-1>", click)
+    canvas.bind("<Button-1>", click)
 
 
 root = Tk()
@@ -137,7 +151,5 @@ lbl.pack()
 
 btn = Button(frm, text='Browse Image', command=showimage)
 btn.pack(side=LEFT)
-
-
 
 root.mainloop()
