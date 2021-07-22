@@ -1,5 +1,4 @@
 import os
-import tkinter
 from tkinter import *
 from tkinter import filedialog
 
@@ -12,13 +11,13 @@ pos_tuple = []
 
 
 def click(event):
-    """ replacement mouse handler inside Canvas, draws a blue ball on each click"""
+    """Replacement mouse handler inside Canvas, draws a blue ball on each click"""
 
+    # Save the coordinates to a list
     print("Canvas: mouse clicked at ", event.x, event.y)
-
     pos_tuple.append([event.x * scale_up_factor, event.y * scale_up_factor])
 
-    python_green = "#476042"
+    # Place a blue dot at every click of mouse
     x1, y1 = (event.x - 1), (event.y - 1)
     x2, y2 = (event.x + 1), (event.y + 1)
     canvas.create_oval(x1, y1, x2, y2, outline='blue', fill='blue', width=5)
@@ -35,6 +34,15 @@ def clearFrame(frame):
 
 
 def get_euclidean(a, b):
+    """Calculate Euclidean Distance between two points a and b
+
+    Args:
+        a (float): center
+        b (float): edge
+
+    Returns:
+        float: radius
+    """
     a = np.array(a)
     b = np.array(b)
 
@@ -42,15 +50,40 @@ def get_euclidean(a, b):
 
 
 def get_radii(point_pairs):
+    """Calculate radius using (center, edge) pair
+
+    Args:
+        point_pairs (list): list of lists where each element is a [center, edge] pair
+
+    Returns:
+        list: list of radii (size if equal to len(point_pairs))
+    """
     return [get_euclidean(pair[0], pair[1]) for pair in point_pairs]
 
 
 def get_pairs(point_list):
+    """Converts list of point clicks to pairs of points
+    A pair represents (center, edge) 
+
+    Args:
+        point_list (list): list of ordered click on the template
+
+    Returns:
+        list: list of lists where each sublist represents a (center, edge) pair
+    """
     n = 2
     return [point_list[i:i + n] for i in range(0, len(point_list) - n + 1, n)]
 
 
 def calculate_centers_and_radii(mouse_clicks):
+    """Calculate centers and radius of the balls on the template
+
+    Args:
+        mouse_clicks (list): ordered list of mouse clicks
+
+    Returns:
+        tuple: (centers, radius)
+    """
     centers = mouse_clicks[::2]
     point_set = get_pairs(mouse_clicks)
     radii = get_radii(point_set)
@@ -64,15 +97,22 @@ def calculate_centers_and_radii(mouse_clicks):
     return centers, radii
 
 
-def show_entry_fields():
+def perform_calibration():
+    """This function performs the calibration/registration and close the GUI automatically
+    """
     global root
     true_w = e1.get()
     true_h = e2.get()
 
     print("Width: %s\tHeight: %s" % (true_w, true_h))
+
+    # extract centers and radius
     centers, radii = calculate_centers_and_radii(pos_tuple)
+    
+    # Perform registraion
     registration(centers, radii, float(true_w), float(true_h), fln)
 
+    # close gui
     root.quit()
 
 
@@ -82,11 +122,14 @@ def showimage():
     global fln
     global canvas
 
+    # open file upload dialog
     fln = filedialog.askopenfilename(initialdir=os.getcwd(),
                                      title='Select Image File',
                                      filetypes=[('All Files', '*.*')])
+    # Open image
     img = Image.open(fln)
 
+    # get width and height of image
     width, height = img.width, img.height
     print(f"Image Width: {width}, Height: {height}")
 
@@ -98,19 +141,17 @@ def showimage():
     new_im_width = int(width * scale_down_factor)
     new_im_height = int(height * scale_down_factor)
 
-    # canvas_width = int(width * (scale_down_factor + 0.05))
-    # canvas_height = int(height * (scale_down_factor + 0.05))
-
+    # resize image to fit on screen
     img = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
 
+    # print image on canvas/gui
     img = ImageTk.PhotoImage(img)
+
+    root.geometry("")
     canvas = Canvas(height=new_im_height, width=new_im_width)
     canvas.image = img
     canvas.create_image(0, 0, anchor='nw', image=img)
     canvas.pack()
-
-    # lbl.configure(image=img)
-    # lbl.image = img
 
     wFrame = Frame(root)
     w = Label(wFrame, text="Width: ")  #.grid(row=0)
@@ -133,23 +174,23 @@ def showimage():
     calibFrame = Frame(root)
     b1 = Button(calibFrame,
                 text='Perform Calibration',
-                command=show_entry_fields)
+                command=perform_calibration)
     calibFrame.pack(side=BOTTOM)
     b1.pack()
 
     canvas.bind("<Button-1>", click)
 
 
-root = Tk()
-root.title('Photo Calibration GUI')
+if __name__ == '__main__':
+    root = Tk()
 
-frm = Frame(root)
-frm.pack(side=TOP)
+    # Frame for Upload Image button
+    frm = Frame(root)
+    frm.pack(side=TOP)
 
-lbl = Label(root)
-lbl.pack()
+    btn = Button(frm, text='Browse Image', command=showimage)
+    btn.pack(side=LEFT)
 
-btn = Button(frm, text='Browse Image', command=showimage)
-btn.pack(side=LEFT)
-
-root.mainloop()
+    root.title('Photo Calibration GUI')
+    root.geometry('250x250')
+    root.mainloop()
