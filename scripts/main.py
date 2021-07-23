@@ -4,7 +4,8 @@ from tkinter import filedialog
 
 import numpy as np
 from PIL import Image, ImageTk
-from registration import registration
+# from registration import registration
+import cv2
 
 global pos_tuple
 pos_tuple = []
@@ -104,16 +105,71 @@ def perform_calibration():
     true_w = e1.get()
     true_h = e2.get()
 
+    # close gui
+    root.quit()
+    root.destroy()  # this solves the problem in Eugenio's linux machine...
+
     print("Width: %s\tHeight: %s" % (true_w, true_h))
 
     # extract centers and radius
     centers, radii = calculate_centers_and_radii(pos_tuple)
 
-    # Perform registraion
-    registration(centers, radii, float(true_w), float(true_h), fln)
+    # Perform registration
+    # registration(centers, radii, float(true_w), float(true_h), fln)
 
-    # close gui
-    root.quit()
+    centers = centers * scale_down_factor_sift
+    radii = radii * scale_down_factor_sift * 0.9  # we don't want to detect keypoints on the circle
+    sift = cv2.SIFT_create()
+    template = np.array(img_sift.convert('LA'))[:, :, 0]
+    kp_template, des_template = sift.detectAndCompute(template, None)
+
+    # Keep only keypoints within radius
+    kp_tmp = []
+    des_tmp = np.zeros(shape=(0, des_template.shape[1]), dtype='float32')
+    for c in range(4):
+        for i in range(len(kp_template)):
+            dist = np.sqrt(np.sum((kp_template[i].pt - centers[c, :])**2))
+            if dist < (radii[c]):
+                # kp_tmp.append(kp_template[i])
+
+                temp = (kp_template[i].pt, kp_template[i].size, kp_template[i].angle, kp_template[i].response, kp_template[i].octave, kp_template[i].class_id)
+                kp_tmp.append(temp)
+
+                des_tmp = np.vstack((des_tmp, des_template[i, :]))
+
+    kp_template = kp_tmp
+    des_template = des_tmp
+
+    # TODO: Harsha, please select output file with a dialog
+    # Also: we don't really need to save the image, but we do it for visualization purposes
+    model_file = '/tmp/model.npz'
+
+    np.savez(model_file, img_template=template, kp_template=kp_template, des_template=des_template, true_w=true_w, true_h=true_h, centers=centers)
+
+    if True:  # TODO:  if DEBUG or something like that?
+
+        import matplotlib.pyplot as plt
+
+        # A bit silly, but we need to reassemble the key points (which we split for saving to disk)
+        kp = []
+        for point in kp_template:
+            temp = cv2.KeyPoint(x=point[0][0], y=point[0][1], size=point[1], angle=point[2], response=point[3],
+                                octave=point[4], class_id=point[5])
+            kp.append(temp)
+
+        kp_im_template = template.copy()
+        kp_im_template = cv2.drawKeypoints(
+            template,
+            kp,
+            kp_im_template,
+            flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+        plt.figure(), plt.imshow(kp_im_template, aspect='equal'), plt.title(
+            'Key points in template image'), plt.show()
+
+
+
+
 
 
 def showimage():
@@ -131,15 +187,26 @@ def showimage():
     width, height = img.width, img.height
     print(f"Image Width: {width}, Height: {height}")
 
-    scale_down_factor = 0.2  # Should be between 0 and 1
+    sift_res = 1024  #TODO: move definition elsewhere?
+    screen_res = 512
+    # scale_down_factor = 0.2  # Should be between 0 and 1
+    global scale_down_factor_sift  # Eugenio
+    scale_down_factor_sift = sift_res / np.min(np.array([width, height]))
+    global scale_down_factor_screen  # Eugenio
+    scale_down_factor_screen = screen_res / np.min(np.array([width, height]))
 
     global scale_up_factor
-    scale_up_factor = np.reciprocal(scale_down_factor)
-
-    new_im_width = int(width * scale_down_factor)
-    new_im_height = int(height * scale_down_factor)
+    scale_up_factor = np.reciprocal(scale_down_factor_screen)
 
     # resize image to fit on screen
+    new_im_width = int(width * scale_down_factor_sift)
+    new_im_height = int(height * scale_down_factor_sift)
+    global img_sift
+    img_sift = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
+
+    # resize image to fit on screen
+    new_im_width = int(width * scale_down_factor_screen)
+    new_im_height = int(height * scale_down_factor_screen)
     img = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
 
     # print image on canvas/gui
