@@ -105,6 +105,8 @@ def perform_calibration():
     true_w = e1.get()
     true_h = e2.get()
 
+    save_filename = filedialog.asksaveasfilename()
+
     # close gui
     root.quit()
     root.destroy()  # this solves the problem in Eugenio's linux machine...
@@ -132,7 +134,9 @@ def perform_calibration():
             if dist < (radii[c]):
                 # kp_tmp.append(kp_template[i])
 
-                temp = (kp_template[i].pt, kp_template[i].size, kp_template[i].angle, kp_template[i].response, kp_template[i].octave, kp_template[i].class_id)
+                temp = (kp_template[i].pt, kp_template[i].size,
+                        kp_template[i].angle, kp_template[i].response,
+                        kp_template[i].octave, kp_template[i].class_id)
                 kp_tmp.append(temp)
 
                 des_tmp = np.vstack((des_tmp, des_template[i, :]))
@@ -142,9 +146,15 @@ def perform_calibration():
 
     # TODO: Harsha, please select output file with a dialog
     # Also: we don't really need to save the image, but we do it for visualization purposes
-    model_file = '/tmp/model.npz'
+    model_file = os.path.join(save_filename)
 
-    np.savez(model_file, img_template=template, kp_template=kp_template, des_template=des_template, true_w=true_w, true_h=true_h, centers=centers)
+    np.savez(model_file,
+             img_template=template,
+             kp_template=kp_template,
+             des_template=des_template,
+             true_w=true_w,
+             true_h=true_h,
+             centers=centers)
 
     if True:  # TODO:  if DEBUG or something like that?
 
@@ -153,8 +163,13 @@ def perform_calibration():
         # A bit silly, but we need to reassemble the key points (which we split for saving to disk)
         kp = []
         for point in kp_template:
-            temp = cv2.KeyPoint(x=point[0][0], y=point[0][1], size=point[1], angle=point[2], response=point[3],
-                                octave=point[4], class_id=point[5])
+            temp = cv2.KeyPoint(x=point[0][0],
+                                y=point[0][1],
+                                size=point[1],
+                                angle=point[2],
+                                response=point[3],
+                                octave=point[4],
+                                class_id=point[5])
             kp.append(temp)
 
         kp_im_template = template.copy()
@@ -166,10 +181,6 @@ def perform_calibration():
 
         plt.figure(), plt.imshow(kp_im_template, aspect='equal'), plt.title(
             'Key points in template image'), plt.show()
-
-
-
-
 
 
 def showimage():
