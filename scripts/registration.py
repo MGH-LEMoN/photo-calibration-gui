@@ -55,7 +55,7 @@ class Application(Frame):
         self.canvas1.create_window(175, 220, window=self.inst_6)
 
         self.btn = Button(text='Click to Start',
-                          command=self.showimage,
+                          command=self.fileUploadWindow,
                           bg='brown',
                           fg='white',
                           font=('cambria', 9, 'bold'))
@@ -65,13 +65,9 @@ class Application(Frame):
         self.value = None
         # self.after(3000, self.getvalue)
 
-    def getvalue(self):
-        self.value = "haha"
-
-    def printvalue(self):
-        print(self.value)
-
-    def showimage(self):
+    def fileUploadWindow(self):
+        """Contains code to generate the second window in the application
+        """        
         # Clear canvas for the next screen
         self.clearFrame(self.canvas1)
 
@@ -116,11 +112,16 @@ class Application(Frame):
         upld = Button(
             root,
             text='Upload Files',
-            command=self.uploadFiles,
+            command=self.performRegistration,
         )
         upld.grid(row=4, columnspan=3, pady=10)
 
     def clearFrame(self, frame):
+        """clears the previous frame
+
+        Args:
+            frame (Tk.Frame): Previous Frame Object
+        """        
         # destroy all widgets from frame
         for widget in frame.winfo_children():
             widget.destroy()
@@ -130,16 +131,24 @@ class Application(Frame):
         frame.pack_forget()
 
     def open_npz_file(self):
+        """File open dialog to choose the calibration file
+        """        
         self.npz_file_path = filedialog.askopenfilename(
             filetypes=[('Image Files', '*.npz')])
 
     def open_input_folder(self):
+        """Input directory selection
+        """        
         self.input_folder_path = filedialog.askdirectory()
 
     def open_output_folder(self):
+        """Output directory selection
+        """        
         self.output_folder_path = filedialog.askdirectory()
 
-    def uploadFiles(self):
+    def performRegistration(self):
+        """Perform registration and show progress
+        """        
         root = self.master
         pb1 = ttk.Progressbar(root,
                               orient=HORIZONTAL,
@@ -161,7 +170,7 @@ class Application(Frame):
             time.sleep(1)
         pb1.destroy()
 
-        Label(root, text='File Uploaded Successfully!',
+        Label(root, text='Performed Registration Successfully!',
               foreground='green').grid(row=5, columnspan=3, pady=10)
 
         # close gui
