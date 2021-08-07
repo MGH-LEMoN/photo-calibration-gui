@@ -2,10 +2,10 @@ import os
 from tkinter import *
 from tkinter import filedialog
 
-import numpy as np
-from PIL import Image, ImageTk
 # from registration import registration
 import cv2
+import numpy as np
+from PIL import Image, ImageTk
 
 global pos_tuple
 pos_tuple = []
