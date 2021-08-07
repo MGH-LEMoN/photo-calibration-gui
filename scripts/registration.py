@@ -19,23 +19,23 @@ class Application(Frame):
         self.canvas1.pack()
 
         self.label1 = Label(master,
-                            text='Welcome to the Photo Registration GUI')
+                            text='Welcome to the\n Photo Registration GUI')
         self.label1.config(font=('cambria', 14))
         self.canvas1.create_window(175, 25, window=self.label1)
 
         self.label_inst = Label(master, text='!!! Instructions !!!')
         self.label_inst.config(font=('cambria', 12, 'bold'))
-        self.canvas1.create_window(175, 60, window=self.label_inst)
+        self.canvas1.create_window(175, 75, window=self.label_inst)
 
         self.inst_1 = Label(
             master, text='1. Select the path to the calibration output file')
         self.inst_1.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 80, window=self.inst_1)
+        self.canvas1.create_window(175, 90, window=self.inst_1)
 
         self.inst_2 = Label(
             master, text='2. Select the directory where the input images are')
         self.inst_2.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 100, window=self.inst_2)
+        self.canvas1.create_window(175, 110, window=self.inst_2)
 
         self.inst_3 = Label(
             master,
@@ -43,7 +43,7 @@ class Application(Frame):
             text=
             '3. Select the directory where you want the output images saved')
         self.inst_3.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 130, window=self.inst_3)
+        self.canvas1.create_window(175, 140, window=self.inst_3)
 
         self.inst_6 = Label(
             master,
@@ -54,7 +54,7 @@ class Application(Frame):
         self.inst_6.config(font=('cambria', 10))
         self.canvas1.create_window(175, 220, window=self.inst_6)
 
-        self.btn = Button(text='Browse Image',
+        self.btn = Button(text='Click to Start',
                           command=self.showimage,
                           bg='brown',
                           fg='white',
@@ -81,37 +81,37 @@ class Application(Frame):
         npz_lbl = Label(root,
                         text='Upload the calibration file (*.npz file)',
                         font=('Cambria', 10))
-        npz_lbl.grid(row=0, column=0, padx=10)
+        npz_lbl.grid(row=0, column=0, padx=20)
 
         npz_btn = Button(root,
                          text='Choose File',
                          font=('Cambria', 10, 'bold'),
                          command=self.open_npz_file)
-        npz_btn.grid(row=0, column=1, padx=10)
+        npz_btn.grid(row=0, column=1, padx=20)
 
         input_lbl = Label(
             root,
             text='Select the input directory for corrected images ',
             font=('Cambria', 10))
-        input_lbl.grid(row=1, column=0, padx=10)
+        input_lbl.grid(row=1, column=0, padx=20)
 
         input_lbl_btn = Button(root,
                                text='Choose Folder ',
                                font=('Cambria', 10, 'bold'),
                                command=self.open_input_folder)
-        input_lbl_btn.grid(row=1, column=1, padx=10)
+        input_lbl_btn.grid(row=1, column=1, padx=20)
 
         output_lbl = Label(
             root,
             font=('Cambria', 10),
             text='Select the output directory for corrected images ')
-        output_lbl.grid(row=2, column=0, padx=10)
+        output_lbl.grid(row=2, column=0, padx=20)
 
         output_lbl_btn = Button(root,
                                 text='Choose Folder ',
                                 font=('Cambria', 10, 'bold'),
                                 command=self.open_output_folder)
-        output_lbl_btn.grid(row=2, column=1, padx=10)
+        output_lbl_btn.grid(row=2, column=1, padx=20)
 
         upld = Button(
             root,
