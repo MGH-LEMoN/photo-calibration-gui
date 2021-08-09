@@ -2,7 +2,8 @@ import glob
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox, ttk
-
+import cv2
+import numpy as np
 from registration import registration
 
 
@@ -90,7 +91,7 @@ class Application(Frame):
         # Specify input images directory
         input_lbl = Label(
             self.master,
-            text='Select the input directory for corrected images ',
+            text='Select the input directory for uncorrected images ',
             font=('Cambria', 10))
         input_lbl.grid(row=1, column=0, padx=20)
 
@@ -104,7 +105,7 @@ class Application(Frame):
         output_lbl = Label(
             self.master,
             font=('Cambria', 10),
-            text='Select the output directory for corrected images ')
+            text='Select the output directory for corrected images (must already exist)')
         output_lbl.grid(row=2, column=0, padx=20)
 
         output_lbl_btn = Button(self.master,
@@ -172,6 +173,27 @@ class Application(Frame):
             messagebox.showwarning("Warning",
                                    "Output Directory Cannot be Empty")
 
+        # Read data from model file
+        variables = np.load(self.npz_file_path, allow_pickle=True)
+        true_width = variables['true_w'].astype('float')
+        true_height = variables['true_h'].astype('float')
+        template = variables['img_template']
+        kp_template_tmp = variables['kp_template']
+        des_template = variables['des_template']
+        centers = variables['centers']
+
+        # reassemble the key points (which we split for saving to disk)
+        kp_template = []
+        for point in kp_template_tmp:
+            temp = cv2.KeyPoint(x=point[0][0],
+                                y=point[0][1],
+                                size=point[1],
+                                angle=point[2],
+                                response=point[3],
+                                octave=point[4],
+                                class_id=point[5])
+            kp_template.append(temp)
+
         input_images = sorted(
             glob.glob(os.path.join(self.input_folder_path, '*.*')))
 
@@ -179,8 +201,9 @@ class Application(Frame):
             self.master.update_idletasks()
             pb1['value'] += 100 / len(input_images)
             try:
-                registration(self.npz_file_path, input_image,
-                             self.output_folder_path)
+                # registration(self.npz_file_path, input_image,
+                #              self.output_folder_path)
+                registration(true_width, true_height, template, des_template, centers, kp_template, input_image, self.output_folder_path)
             except:
                 print(f'failed on {input_image}')
         pb1.destroy()

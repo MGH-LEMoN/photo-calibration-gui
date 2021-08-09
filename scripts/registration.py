@@ -4,18 +4,11 @@ import cv2
 import numpy as np
 
 
-def registration(model_file, input_image, output_dir=None):
+def registration(true_width, true_height, template, des_template, centers, kp_template, input_image, output_dir=None):
     # Constants
-    DEBUG = True
+    DEBUG = False
     sift_res = 1024  # resolution at which SIFT operates;  TODO: make consistent with that of main.py
     reference_pixel_size = 0.1  # resolution of the final, perspective corrected image (in mm)
-
-    # def registration(centers, radii, true_width, true_height, template_path):
-
-    # TODO: get these file names with a GUI (possibly a directory, looping over images in the directory)
-    # model_file = '/tmp/model.npz'
-    # input_image = './data/test.jpg'
-    # output_image = '/tmp/perspective_corrected.jpg'
 
     input_path, input_ext = os.path.splitext(input_image)
     _, input_name = os.path.split(input_path)
@@ -25,33 +18,6 @@ def registration(model_file, input_image, output_dir=None):
         output_dir = os.getcwd()
 
     output_image = os.path.join(output_dir, output_image)
-
-    # assert isinstance(centers, np.ndarray)
-    # assert isinstance(radii, np.ndarray)
-    # assert isinstance(true_width, float)
-    # assert isinstance(true_height, float)
-    # assert isinstance(template_path, str)
-
-    # Read data from model file
-    variables = np.load(model_file, allow_pickle=True)
-    true_width = variables['true_w'].astype('float')
-    true_height = variables['true_h'].astype('float')
-    template = variables['img_template']
-    kp_template_tmp = variables['kp_template']
-    des_template = variables['des_template']
-    centers = variables['centers']
-
-    # reassemble the key points (which we split for saving to disk)
-    kp_template = []
-    for point in kp_template_tmp:
-        temp = cv2.KeyPoint(x=point[0][0],
-                            y=point[0][1],
-                            size=point[1],
-                            angle=point[2],
-                            response=point[3],
-                            octave=point[4],
-                            class_id=point[5])
-        kp_template.append(temp)
 
     # Read in new image to process
     target = cv2.imread(input_image, cv2.IMREAD_GRAYSCALE)
