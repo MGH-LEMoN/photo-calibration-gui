@@ -4,7 +4,14 @@ import cv2
 import numpy as np
 
 
-def registration(true_width, true_height, template, des_template, centers, kp_template, input_image, output_dir=None):
+def registration(true_width,
+                 true_height,
+                 template,
+                 des_template,
+                 centers,
+                 kp_template,
+                 input_image,
+                 output_dir=None):
     # Constants
     DEBUG = False
     sift_res = 1024  # resolution at which SIFT operates;  TODO: make consistent with that of main.py

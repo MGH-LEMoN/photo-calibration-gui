@@ -3,9 +3,11 @@ import os
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog, messagebox, ttk
-from PIL import Image, ImageTk
+
 import cv2
 import numpy as np
+from PIL import Image, ImageTk
+
 from registration import registration
 
 
@@ -30,8 +32,9 @@ class Application(Frame):
         self.canvas1 = Canvas(master, width=400, height=350)
         self.canvas1.pack()
 
-        self.label1 = Label(self.master,
-                            text='Welcome to the *retrospective*\n Photo Registration GUI')
+        self.label1 = Label(
+            self.master,
+            text='Welcome to the *retrospective*\n Photo Registration GUI')
         self.label1.config(font=('cambria', 14))
         self.canvas1.create_window(175, 25, window=self.label1)
 
@@ -40,12 +43,16 @@ class Application(Frame):
         self.canvas1.create_window(175, 75, window=self.label_inst)
 
         self.inst_1 = Label(
-            master, text='1. Select the directory \n where the input images are')
+            master,
+            text='1. Select the directory \n where the input images are')
         self.inst_1.config(font=('cambria', 10))
         self.canvas1.create_window(175, 100, window=self.inst_1)
 
         self.inst_2 = Label(
-            master, text='2. Select the directory where \n you want the output images saved')
+            master,
+            text=
+            '2. Select the directory where \n you want the output images saved'
+        )
         self.inst_2.config(font=('cambria', 10))
         self.canvas1.create_window(175, 135, window=self.inst_2)
 
@@ -53,7 +60,8 @@ class Application(Frame):
             self.master,
             wraplength=325,
             text=
-            '3. Click on 4 corners of a rectangle \n for every image and \n provide the dimensions in mm')
+            '3. Click on 4 corners of a rectangle \n for every image and \n provide the dimensions in mm'
+        )
         self.inst_3.config(font=('cambria', 10))
         self.canvas1.create_window(175, 175, window=self.inst_3)
 
@@ -99,7 +107,9 @@ class Application(Frame):
         output_lbl = Label(
             self.master,
             font=('Cambria', 10),
-            text='Select the output directory for corrected images (must already exist)')
+            text=
+            'Select the output directory for corrected images (must already exist)'
+        )
         output_lbl.grid(row=1, column=0, padx=20)
 
         output_lbl_btn = Button(self.master,
@@ -116,7 +126,6 @@ class Application(Frame):
             command=self.performRegistration1,
         )
         upld.grid(row=3, columnspan=3, pady=10)
-
 
     def fileUploadWindow_new(self):
         """Contains code to generate the second window in the application
@@ -145,14 +154,19 @@ class Application(Frame):
         output_lbl = Label(
             self.master,
             font=('Cambria', 10),
-            text='Select the output directory for corrected images \n (must already exist)')
+            text=
+            'Select the output directory for corrected images \n (must already exist)'
+        )
         self.canvas2.create_window(10, 50, anchor=tk.NW, window=output_lbl)
 
         output_lbl_btn = Button(self.master,
                                 text='Choose Folder ',
                                 font=('Cambria', 10, 'bold'),
                                 command=self.open_output_folder)
-        self.canvas2.create_window(450, 50, anchor=tk.NW, window=output_lbl_btn)
+        self.canvas2.create_window(450,
+                                   50,
+                                   anchor=tk.NW,
+                                   window=output_lbl_btn)
 
         upld_btn = Button(
             self.master,
@@ -164,7 +178,6 @@ class Application(Frame):
         self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
 
     def clearFrame(self, frame):
-
         """clears the previous frame
 
         Args:
@@ -177,7 +190,6 @@ class Application(Frame):
         # this will clear frame and frame will be empty
         # if you want to hide the empty panel then
         frame.pack_forget()
-
 
     def open_input_folder(self):
         """Input directory selection
@@ -203,8 +215,8 @@ class Application(Frame):
             input_path, input_ext = os.path.splitext(input_image)
             _, input_name = os.path.split(input_path)
             self.output_image = input_name + '_deformed' + input_ext
-            
-            self.pos_tuple =[]
+
+            self.pos_tuple = []
 
             # Open image
             self.img_fullres = Image.open(input_image)
@@ -214,16 +226,20 @@ class Application(Frame):
 
             # Resize so if fits on screen
             screen_res = 256
-            self.scale_down_factor_screen = screen_res / np.min(np.array([width, height]))
-            
+            self.scale_down_factor_screen = screen_res / np.min(
+                np.array([width, height]))
+
             new_im_width = int(width * self.scale_down_factor_screen)
             new_im_height = int(height * self.scale_down_factor_screen)
-            
-            img_screen = self.img_fullres.resize((new_im_width, new_im_height), Image.ANTIALIAS)
+
+            img_screen = self.img_fullres.resize((new_im_width, new_im_height),
+                                                 Image.ANTIALIAS)
             img_screen = ImageTk.PhotoImage(img_screen)
 
             # Paint on screen
-            self.canvas3 = Canvas(self.master, height=new_im_height + 100, width=new_im_width)
+            self.canvas3 = Canvas(self.master,
+                                  height=new_im_height + 100,
+                                  width=new_im_width)
             self.canvas3.image = img_screen
             self.canvas3.create_image(0, 0, anchor='nw', image=img_screen)
             self.canvas3.pack()
@@ -232,16 +248,32 @@ class Application(Frame):
             canvas_width = self.canvas3.winfo_width()
             canvas_height = self.canvas3.winfo_height()
 
-            w = Label(self.master, text="Width: ", font=('Cambria', 10, 'bold'))
+            w = Label(self.master,
+                      text="Width: ",
+                      font=('Cambria', 10, 'bold'))
             self.e1 = Entry(self.master, width=10)
-            
-            self.canvas3.create_window(canvas_width // 2, canvas_height - 85, anchor=tk.NE, window=w)
-            self.canvas3.create_window(canvas_width // 2, canvas_height - 85, anchor=tk.NW, window=self.e1)
 
-            h = Label(self.master, text="Height: ", font=('Cambria', 10, 'bold'))
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 85,
+                                       anchor=tk.NE,
+                                       window=w)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 85,
+                                       anchor=tk.NW,
+                                       window=self.e1)
+
+            h = Label(self.master,
+                      text="Height: ",
+                      font=('Cambria', 10, 'bold'))
             self.e2 = Entry(self.master, width=10)
-            self.canvas3.create_window(canvas_width // 2, canvas_height - 60, anchor=tk.NE, window=h)
-            self.canvas3.create_window(canvas_width // 2, canvas_height - 60, anchor=tk.NW, window=self.e2)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 60,
+                                       anchor=tk.NE,
+                                       window=h)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 60,
+                                       anchor=tk.NW,
+                                       window=self.e2)
 
             b1 = Button(self.master,
                         text='Perform Registration',
@@ -249,7 +281,10 @@ class Application(Frame):
                         bg='brown',
                         fg='white',
                         font=('cambria', 9, 'bold'))
-            self.canvas3.create_window(canvas_width // 2, canvas_height - 20, anchor=tk.CENTER, window=b1)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 20,
+                                       anchor=tk.CENTER,
+                                       window=b1)
 
             self.canvas3.bind("<Button-1>", self.click)
 
@@ -263,7 +298,8 @@ class Application(Frame):
         true_width = float(self.e1.get())
         true_height = float(self.e2.get())
 
-        centers_target = np.array(self.pos_tuple) / self.scale_down_factor_screen
+        centers_target = np.array(
+            self.pos_tuple) / self.scale_down_factor_screen
         centers_target = centers_target[:, np.newaxis, :]
 
         # Now we only have to compute the final transform. The only caveat is the ordering of the corners...
@@ -310,25 +346,31 @@ class Application(Frame):
 
         # We compute the final perspective transform
         M2, _ = cv2.findHomography(centers_target_reordered, ref_coords)
-        self.deformed_image = cv2.warpPerspective(self.img_fullres, M2,
-                                            (ref_coords[1, 0, 0].astype(int) + 1,
-                                            ref_coords[2, 0, 1].astype(int) + 1))
+        self.deformed_image = cv2.warpPerspective(
+            self.img_fullres, M2, (ref_coords[1, 0, 0].astype(int) + 1,
+                                   ref_coords[2, 0, 1].astype(int) + 1))
 
-        cv2.imwrite(self.output_image, cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR))
-    
+        cv2.imwrite(self.output_image,
+                    cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR))
 
     def click(self, event):
         """Replacement mouse handler inside Canvas, draws a blue ball on each click"""
 
         # Save the coordinates to a list
         print("Canvas: mouse clicked at ", event.x, event.y)
-        self.pos_tuple.append([event.x , event.y])
+        self.pos_tuple.append([event.x, event.y])
 
         # Place a blue dot at every click of mouse
         x1, y1 = (event.x - 1), (event.y - 1)
         x2, y2 = (event.x + 1), (event.y + 1)
 
-        self.canvas3.create_oval(x1, y1, x2, y2, outline='blue', fill='blue', width=5)
+        self.canvas3.create_oval(x1,
+                                 y1,
+                                 x2,
+                                 y2,
+                                 outline='blue',
+                                 fill='blue',
+                                 width=5)
 
 
 if __name__ == '__main__':

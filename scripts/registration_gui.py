@@ -2,8 +2,10 @@ import glob
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox, ttk
+
 import cv2
 import numpy as np
+
 from registration import registration
 
 
@@ -105,7 +107,9 @@ class Application(Frame):
         output_lbl = Label(
             self.master,
             font=('Cambria', 10),
-            text='Select the output directory for corrected images (must already exist)')
+            text=
+            'Select the output directory for corrected images (must already exist)'
+        )
         output_lbl.grid(row=2, column=0, padx=20)
 
         output_lbl_btn = Button(self.master,
@@ -203,7 +207,9 @@ class Application(Frame):
             try:
                 # registration(self.npz_file_path, input_image,
                 #              self.output_folder_path)
-                registration(true_width, true_height, template, des_template, centers, kp_template, input_image, self.output_folder_path)
+                registration(true_width, true_height, template, des_template,
+                             centers, kp_template, input_image,
+                             self.output_folder_path)
             except:
                 print(f'failed on {input_image}')
         pb1.destroy()

@@ -1,5 +1,6 @@
-import numpy as np
 import cv2
+import numpy as np
+
 
 # Computes Gaussian scale spaece features of an image (RGB or gray), up to a maximum order, given a vector of scales
 def compute_gaussian_scaled_space_features(image, max_order, vector_of_scales):
@@ -30,7 +31,8 @@ def compute_gaussian_scaled_space_features(image, max_order, vector_of_scales):
         if vector_of_scales[s] == 0:
             im_blur = image.astype(float)
         else:
-            im_blur = cv2.GaussianBlur(image.astype(float), [0, 0], sigmaX=vector_of_scales[s],
+            im_blur = cv2.GaussianBlur(image.astype(float), [0, 0],
+                                       sigmaX=vector_of_scales[s],
                                        sigmaY=vector_of_scales[s])
 
         for order in range(max_order + 1):
@@ -48,5 +50,3 @@ def compute_gaussian_scaled_space_features(image, max_order, vector_of_scales):
                             idx_f = idx_f + 1
 
     return F
-
-
