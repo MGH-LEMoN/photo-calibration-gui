@@ -1,5 +1,6 @@
 import glob
 import os
+import tkinter as tk
 from tkinter import *
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
@@ -15,6 +16,11 @@ class Application(Frame):
         # Declare variables
         self.input_folder_path = None
         self.output_folder_path = None
+
+        self.true_width = None
+        self.true_height = None
+        self.scale_down_factor_screen = None
+        self.pos_tuple = None
 
         # Staer Application Window
         self.master = master
@@ -34,34 +40,34 @@ class Application(Frame):
         self.canvas1.create_window(175, 75, window=self.label_inst)
 
         self.inst_1 = Label(
-            master, text='1. Select the directory where the input images are')
+            master, text='1. Select the directory \n where the input images are')
         self.inst_1.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 90, window=self.inst_1)
+        self.canvas1.create_window(175, 100, window=self.inst_1)
 
         self.inst_2 = Label(
-            master, text='2. Select the directory where you want the output images saved')
+            master, text='2. Select the directory where \n you want the output images saved')
         self.inst_2.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 110, window=self.inst_2)
+        self.canvas1.create_window(175, 135, window=self.inst_2)
 
         self.inst_3 = Label(
             self.master,
             wraplength=325,
             text=
-            '3. Click on 4 corners of a rectangle for every image and provide the dimensions in mm')
+            '3. Click on 4 corners of a rectangle \n for every image and \n provide the dimensions in mm')
         self.inst_3.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 140, window=self.inst_3)
+        self.canvas1.create_window(175, 175, window=self.inst_3)
 
         self.inst_6 = Label(
             self.master,
             wraplength=325,
             text=
-            '4. Click on Register buttom and wait until the program loads the next image'
+            '4. Click on Register buttom and \n wait until the program loads the next image'
         )
         self.inst_6.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 220, window=self.inst_6)
+        self.canvas1.create_window(175, 225, window=self.inst_6)
 
         self.btn = Button(text='Click to Start',
-                          command=self.fileUploadWindow,
+                          command=self.fileUploadWindow_new,
                           bg='brown',
                           fg='white',
                           font=('cambria', 9, 'bold'))
@@ -107,11 +113,58 @@ class Application(Frame):
             text='Register Images',
             bg='brown',
             fg='white',
-            command=self.performRegistration,
+            command=self.performRegistration1,
         )
         upld.grid(row=3, columnspan=3, pady=10)
 
+
+    def fileUploadWindow_new(self):
+        """Contains code to generate the second window in the application
+        """
+        # Clear canvas for the next screen
+        self.clearFrame(self.canvas1)
+
+        # Create canvas for widgets
+        self.canvas2 = Canvas(self.master, width=600, height=205)
+        self.canvas2.pack()
+
+        # Specify input images directory
+        input_lbl = Label(
+            self.master,
+            text='Select the input directory for uncorrected images ',
+            font=('Cambria', 10))
+        self.canvas2.create_window(10, 10, anchor=tk.NW, window=input_lbl)
+
+        input_lbl_btn = Button(self.master,
+                               text='Choose Folder ',
+                               font=('Cambria', 10, 'bold'),
+                               command=self.open_input_folder)
+        self.canvas2.create_window(450, 10, anchor=tk.NW, window=input_lbl_btn)
+
+        # Specify directory to store corrected images
+        output_lbl = Label(
+            self.master,
+            font=('Cambria', 10),
+            text='Select the output directory for corrected images \n (must already exist)')
+        self.canvas2.create_window(10, 50, anchor=tk.NW, window=output_lbl)
+
+        output_lbl_btn = Button(self.master,
+                                text='Choose Folder ',
+                                font=('Cambria', 10, 'bold'),
+                                command=self.open_output_folder)
+        self.canvas2.create_window(450, 50, anchor=tk.NW, window=output_lbl_btn)
+
+        upld_btn = Button(
+            self.master,
+            text='Register Images',
+            bg='brown',
+            fg='white',
+            command=self.performRegistration,
+        )
+        self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
+
     def clearFrame(self, frame):
+
         """clears the previous frame
 
         Args:
@@ -137,172 +190,145 @@ class Application(Frame):
         self.output_folder_path = filedialog.askdirectory()
 
     def performRegistration(self):
-        """Perform registration and show progress
-        """
-        pb1 = ttk.Progressbar(self.master,
-                              orient=HORIZONTAL,
-                              length=300,
-                              mode='determinate')
-        pb1.grid(row=5, columnspan=3, pady=10)
 
-        if self.input_folder_path is None:
-            messagebox.showwarning("Warning",
-                                   "Input Directory Cannot be Empty")
-
-        if self.output_folder_path is None:
-            messagebox.showwarning("Warning",
-                                   "Output Directory Cannot be Empty")
+        # Clear canvas for the next screen
+        self.clearFrame(self.canvas2)
 
         # Go over images
         input_images = sorted(
             glob.glob(os.path.join(self.input_folder_path, '*.*')))
 
         for input_image in input_images:
-            self.master.update_idletasks()
-            pb1['value'] += 100 / len(input_images)
-            global canvas
-            global e1
-            global e2
-            global pos_tuple
-            global scale_down_factor_screen
-            global img_fullres
-            global deformed_image = None
-            root = Tk()
-            try:
 
-                pos_tuple = []
+            input_path, input_ext = os.path.splitext(input_image)
+            _, input_name = os.path.split(input_path)
+            self.output_image = input_name + '_deformed' + input_ext
+            
+            self.pos_tuple =[]
 
-                # Open image
-                img_fullres = Image.open(input_image)
-                # get width and height of image
-                width, height = img.width, img.height
-                # Resize so if fits on screen
-                screen_res = 512
-                scale_down_factor_screen  = screen_res / np.min(np.array([width, height]))
-                new_im_width = int(width * scale_down_factor_screen)
-                new_im_height = int(height * scale_down_factor_screen)
-                img_screen = img_fullres.resize((new_im_width, new_im_height), Image.ANTIALIAS)
-                img_screen = ImageTk.PhotoImage(img_screen)
-                # Paint on screen
+            # Open image
+            self.img_fullres = Image.open(input_image)
 
-                canvas = Canvas(height=new_im_height, width=new_im_width)
-                canvas.image = img_screen
-                canvas.create_image(0, 0, anchor='nw', image=img_screen)
-                canvas.pack()
+            # get width and height of image
+            width, height = self.img_fullres.width, self.img_fullres.height
 
-                frame = Frame(root)
-                frame.pack()
+            # Resize so if fits on screen
+            screen_res = 256
+            self.scale_down_factor_screen = screen_res / np.min(np.array([width, height]))
+            
+            new_im_width = int(width * self.scale_down_factor_screen)
+            new_im_height = int(height * self.scale_down_factor_screen)
+            
+            img_screen = self.img_fullres.resize((new_im_width, new_im_height), Image.ANTIALIAS)
+            img_screen = ImageTk.PhotoImage(img_screen)
 
-                w = Label(frame, text="Width: ", font=('Cambria', 10, 'bold'))
-                e1 = Entry(frame, width=10)
+            # Paint on screen
+            self.canvas3 = Canvas(self.master, height=new_im_height + 100, width=new_im_width)
+            self.canvas3.image = img_screen
+            self.canvas3.create_image(0, 0, anchor='nw', image=img_screen)
+            self.canvas3.pack()
 
-                w.pack(side=LEFT)
-                e1.pack(side=LEFT)
+            self.canvas3.update()
+            canvas_width = self.canvas3.winfo_width()
+            canvas_height = self.canvas3.winfo_height()
 
-                h = Label(frame, text="Height: ", font=('Cambria', 10, 'bold'))
-                e2 = Entry(frame, width=10)
+            w = Label(self.master, text="Width: ", font=('Cambria', 10, 'bold'))
+            self.e1 = Entry(self.master, width=10)
+            
+            self.canvas3.create_window(canvas_width // 2, canvas_height - 85, anchor=tk.NE, window=w)
+            self.canvas3.create_window(canvas_width // 2, canvas_height - 85, anchor=tk.NW, window=self.e1)
 
-                h.pack(side=LEFT)
-                e2.pack(side=LEFT)
+            h = Label(self.master, text="Height: ", font=('Cambria', 10, 'bold'))
+            self.e2 = Entry(self.master, width=10)
+            self.canvas3.create_window(canvas_width // 2, canvas_height - 60, anchor=tk.NE, window=h)
+            self.canvas3.create_window(canvas_width // 2, canvas_height - 60, anchor=tk.NW, window=self.e2)
 
-                calibFrame = Frame(root)
-                b1 = Button(calibFrame,
-                            text='Perform Registration',
-                            command=perform_registration,
-                            bg='brown',
-                            fg='white',
-                            font=('cambria', 9, 'bold'))
-                calibFrame.pack(side=BOTTOM)
-                b1.pack()
+            b1 = Button(self.master,
+                        text='Perform Registration',
+                        command=self.perform_registration,
+                        bg='brown',
+                        fg='white',
+                        font=('cambria', 9, 'bold'))
+            self.canvas3.create_window(canvas_width // 2, canvas_height - 20, anchor=tk.CENTER, window=b1)
 
-                canvas.bind("<Button-1>", click)
+            self.canvas3.bind("<Button-1>", self.click)
 
-                cv2.imwrite(output_image, cv2.cvtColor(deformed_image, cv2.COLOR_RGB2BGR))
+        # self.master.destroy()
 
-            except:
-                print(f'failed on {input_image}')
+    def perform_registration(self):
+        """This function performs the registration and close the GUI automatically
+        """
+        reference_pixel_size = 0.1
 
-        pb1.destroy()
+        true_width = float(self.e1.get())
+        true_height = float(self.e2.get())
 
-        Label(self.master,
-              text='Performed Registration Successfully!',
-              foreground='green').grid(row=5, columnspan=3, pady=10)
+        centers_target = np.array(self.pos_tuple) / self.scale_down_factor_screen
+        centers_target = centers_target[:, np.newaxis, :]
 
-        # close gui
-        # self.master.quit()
-        self.master.destroy()
+        # Now we only have to compute the final transform. The only caveat is the ordering of the corners...
+        # We reorder then to NW, NE, SW, SE
+        centers_target_reordered = np.zeros_like(centers_target)
 
-def perform_registration():
-    """This function performs the registration and close the GUI automatically
-    """
-    global root
-    true_width = e1.get()
-    true_height = e2.get()
+        cost = centers_target[:, 0, 0] + centers_target[:, 0, 1]
+        idx = np.argmin(cost)
+        centers_target_reordered[0, 0, :] = centers_target[idx, 0, :]
+        centers_target[idx, 0, :] = 0
 
-    centers_target = np.array(pos_tuple) / scale_down_factor_screen
+        cost = -centers_target[:, 0, 0] + centers_target[:, 0, 1]
+        cost[cost == 0] = 1e10
+        idx = np.argmin(cost)
+        centers_target_reordered[1, 0, :] = centers_target[idx, 0, :]
+        centers_target[idx, 0, :] = 0
 
-    # Now we only have to compute the final transform. The only caveat is the ordering of the corners...
-    # We reorder then to NW, NE, SW, SE
-    centers_target_reordered = np.zeros_like(centers_target)
+        cost = centers_target[:, 0, 0] - centers_target[:, 0, 1]
+        cost[cost == 0] = 1e10
+        idx = np.argmin(cost)
+        centers_target_reordered[2, 0, :] = centers_target[idx, 0, :]
+        centers_target[idx, 0, :] = 0
 
-    cost = centers_target[:, 0, 0] + centers_target[:, 0, 1]
-    idx = np.argmin(cost)
-    centers_target_reordered[0, 0, :] = centers_target[idx, 0, :]
-    centers_target[idx, 0, :] = 0
+        cost = -centers_target[:, 0, 0] - centers_target[:, 0, 1]
+        cost[cost == 0] = 1e10
+        idx = np.argmin(cost)
+        centers_target_reordered[3, 0, :] = centers_target[idx, 0, :]
+        centers_target[idx, 0, :] = 0
 
-    cost = -centers_target[:, 0, 0] + centers_target[:, 0, 1]
-    cost[cost == 0] = 1e10
-    idx = np.argmin(cost)
-    centers_target_reordered[1, 0, :] = centers_target[idx, 0, :]
-    centers_target[idx, 0, :] = 0
+        # We now define the target coordinates using the reerence resolution
+        ref_coords = np.zeros_like(centers_target)
 
-    cost = centers_target[:, 0, 0] - centers_target[:, 0, 1]
-    cost[cost == 0] = 1e10
-    idx = np.argmin(cost)
-    centers_target_reordered[2, 0, :] = centers_target[idx, 0, :]
-    centers_target[idx, 0, :] = 0
+        ref_coords[0, 0, 0] = 0
+        ref_coords[0, 0, 1] = 0
 
-    cost = -centers_target[:, 0, 0] - centers_target[:, 0, 1]
-    cost[cost == 0] = 1e10
-    idx = np.argmin(cost)
-    centers_target_reordered[3, 0, :] = centers_target[idx, 0, :]
-    centers_target[idx, 0, :] = 0
+        ref_coords[1, 0, 0] = np.round(true_width / reference_pixel_size) - 1
+        ref_coords[1, 0, 1] = 0
 
-    # We now define the target coordinates using the reerence resolution
-    ref_coords = np.zeros_like(centers_target)
+        ref_coords[2, 0, 0] = 0
+        ref_coords[2, 0, 1] = np.round(true_height / reference_pixel_size) - 1
 
-    ref_coords[0, 0, 0] = 0
-    ref_coords[0, 0, 1] = 0
+        ref_coords[3, 0, 0] = np.round(true_width / reference_pixel_size) - 1
+        ref_coords[3, 0, 1] = np.round(true_height / reference_pixel_size) - 1
 
-    ref_coords[1, 0, 0] = np.round(true_width / reference_pixel_size) - 1
-    ref_coords[1, 0, 1] = 0
+        # We compute the final perspective transform
+        M2, _ = cv2.findHomography(centers_target_reordered, ref_coords)
+        self.deformed_image = cv2.warpPerspective(self.img_fullres, M2,
+                                            (ref_coords[1, 0, 0].astype(int) + 1,
+                                            ref_coords[2, 0, 1].astype(int) + 1))
 
-    ref_coords[2, 0, 0] = 0
-    ref_coords[2, 0, 1] = np.round(true_height / reference_pixel_size) - 1
+        cv2.imwrite(self.output_image, cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR))
+    
 
-    ref_coords[3, 0, 0] = np.round(true_width / reference_pixel_size) - 1
-    ref_coords[3, 0, 1] = np.round(true_height / reference_pixel_size) - 1
+    def click(self, event):
+        """Replacement mouse handler inside Canvas, draws a blue ball on each click"""
 
-    # We compute the final perspective transform
-    M2, _ = cv2.findHomography(centers_target_reordered, ref_coords)
-    deformed_image = cv2.warpPerspective(img_fullres, M2,
-                                         (ref_coords[1, 0, 0].astype(int) + 1,
-                                          ref_coords[2, 0, 1].astype(int) + 1))
+        # Save the coordinates to a list
+        print("Canvas: mouse clicked at ", event.x, event.y)
+        self.pos_tuple.append([event.x , event.y])
 
+        # Place a blue dot at every click of mouse
+        x1, y1 = (event.x - 1), (event.y - 1)
+        x2, y2 = (event.x + 1), (event.y + 1)
 
-def click(event):
-    """Replacement mouse handler inside Canvas, draws a blue ball on each click"""
-
-    # Save the coordinates to a list
-    print("Canvas: mouse clicked at ", event.x, event.y)
-    pos_tuple.append([event.x , event.y ])
-
-    # Place a blue dot at every click of mouse
-    x1, y1 = (event.x - 1), (event.y - 1)
-    x2, y2 = (event.x + 1), (event.y + 1)
-    canvas.create_oval(x1, y1, x2, y2, outline='blue', fill='blue', width=5)
-
-
+        self.canvas3.create_oval(x1, y1, x2, y2, outline='blue', fill='blue', width=5)
 
 
 if __name__ == '__main__':
