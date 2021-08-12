@@ -75,59 +75,13 @@ class Application(Frame):
         self.canvas1.create_window(175, 225, window=self.inst_6)
 
         self.btn = Button(text='Click to Start',
-                          command=self.fileUploadWindow_new,
+                          command=self.fileUploadWindow,
                           bg='brown',
                           fg='white',
                           font=('cambria', 9, 'bold'))
         self.canvas1.create_window(175, 275, window=self.btn)
 
     def fileUploadWindow(self):
-        """Contains code to generate the second window in the application
-        """
-        # Clear canvas for the next screen
-        self.clearFrame(self.canvas1)
-
-        # Set window size
-        self.master.geometry('600x200')
-
-        # Specify input images directory
-        input_lbl = Label(
-            self.master,
-            text='Select the input directory for uncorrected images ',
-            font=('Cambria', 10))
-        input_lbl.grid(row=0, column=0, padx=20)
-
-        input_lbl_btn = Button(self.master,
-                               text='Choose Folder ',
-                               font=('Cambria', 10, 'bold'),
-                               command=self.open_input_folder)
-        input_lbl_btn.grid(row=0, column=1, padx=20)
-
-        # Specify directory to store corrected images
-        output_lbl = Label(
-            self.master,
-            font=('Cambria', 10),
-            text=
-            'Select the output directory for corrected images (must already exist)'
-        )
-        output_lbl.grid(row=1, column=0, padx=20)
-
-        output_lbl_btn = Button(self.master,
-                                text='Choose Folder ',
-                                font=('Cambria', 10, 'bold'),
-                                command=self.open_output_folder)
-        output_lbl_btn.grid(row=1, column=1, padx=20)
-
-        upld = Button(
-            self.master,
-            text='Register Images',
-            bg='brown',
-            fg='white',
-            command=self.performRegistration1,
-        )
-        upld.grid(row=3, columnspan=3, pady=10)
-
-    def fileUploadWindow_new(self):
         """Contains code to generate the second window in the application
         """
         # Clear canvas for the next screen
