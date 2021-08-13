@@ -7,7 +7,6 @@ from tkinter import filedialog, messagebox, ttk
 import cv2
 import numpy as np
 from PIL import Image, ImageTk
-
 from registration import registration
 
 
@@ -168,7 +167,8 @@ class Application(Frame):
 
             input_path, input_ext = os.path.splitext(input_image)
             _, input_name = os.path.split(input_path)
-            self.output_image = os.path.join(self.output_folder_path, input_name + '_deformed' + input_ext)
+            self.output_image = os.path.join(
+                self.output_folder_path, input_name + '_deformed' + input_ext)
 
             self.pos_tuple = []
 
@@ -300,9 +300,9 @@ class Application(Frame):
 
         # We compute the final perspective transform
         M2, _ = cv2.findHomography(centers_target_reordered, ref_coords)
-        self.deformed_image = cv2.warpPerspective(
-            np.asarray(self.img_fullres), M2, (ref_coords[1, 0, 0].astype(int) + 1,
-                                   ref_coords[2, 0, 1].astype(int) + 1))
+        self.deformed_image = cv2.warpPerspective(np.asarray(
+            self.img_fullres), M2, (ref_coords[1, 0, 0].astype(int) + 1,
+                                    ref_coords[2, 0, 1].astype(int) + 1))
 
         cv2.imwrite(self.output_image,
                     cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR))

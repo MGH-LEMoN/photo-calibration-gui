@@ -3,12 +3,13 @@ import os
 import time
 import tkinter as tk
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 import numpy as np
 import skimage
 import skimage.io as io
 from PIL import Image, ImageTk
+
 
 class Application(Frame):
     def __init__(self, master=None):
@@ -21,23 +22,8 @@ class Application(Frame):
 
         # Staer Application Window
         self.master = master
-        self.master.title('Train Segmentation GUI')
-
-        self.rect = None
-        self.start_x = None
-        self.start_y = None
-        self.x = self.y = 0
-
-        # self.topx = 0
-        # self.topy = 0
-
-        # self.botx = 0
-        # self.boty = 0
-
-        # self.rect_id = None
-
-        # self.rect_list = list()
-        # self.rect_main_data = list()
+        self.master.title('Unknown GUI')
+        self.master.resizable(0, 0)  # fix window
 
         # Create canvas for widgets
         self.canvas1 = Canvas(master, width=400, height=350)
@@ -136,140 +122,152 @@ class Application(Frame):
                           text='Click here',
                           bg='brown',
                           fg='white',
-                          command=self.performRegistration)
+                          command=self.create_mask_section)
         self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
 
-    def performRegistration(self):
-
+    def create_mask_section(self):
         # Clear canvas for the next screen
         self.clearFrame(self.canvas2)
 
-        # Go over images
-        input_images = sorted(
-            glob.glob(os.path.join(self.input_folder_path, '*.*')))
+        # Paint on screen
+        self.canvas3 = Canvas(self.master)
+        self.canvas3.pack()
 
-        # Go over masks
-        mask_images = sorted(
-            glob.glob(os.path.join(self.mask_folder_path, '*.*')))
+        # assuming the images have been matched
+        self.image_mask_pair = iter(zip(self.input_images, self.mask_images))
 
-        for input_image, mask_image in zip(input_images, mask_images):
+        # show the first image
+        self.next_img()
 
-            self.current_image = input_image
-            self.current_mask = mask_image
+        self.canvas3.update()
 
-            try:
-                self.clearFrame(self.canvas3)
-            except Exception as e:
-                pass
+    def next_img(self):
+        try:
+            self.current_image, self.current_mask = next(self.image_mask_pair)
+        except StopIteration:
+            messagebox.showinfo(
+                title='End of Images',
+                message='No More Images to Process\n Quit Program')
 
-            input_path, input_ext = os.path.splitext(input_image)
-            _, input_name = os.path.split(input_path)
-            self.output_image = input_name + '_deformed' + input_ext
+            self.master.destroy()
 
-            # Open image
-            # self.img_fullres = Image.open(input_image)
-            # Open image
-            self.image = skimage.io.imread(input_image)
+            return
 
-            # Open mask
-            self.mask = skimage.io.imread(mask_image)
+        input_path, input_ext = os.path.splitext(self.current_image)
+        _, input_name = os.path.split(input_path)
+        self.output_image = input_name + '_deformed' + input_ext
 
-            self.mask = self.mask > 128
+        # Open image
+        self.image = skimage.io.imread(self.current_image)
 
-            # check with E about this
-            masked_image = self.image[:,:,0] * self.mask
+        # Open mask
+        self.mask = skimage.io.imread(self.current_mask) > 128
 
-            # Open mask
-            self.img_fullres = Image.fromarray(masked_image)
+        # check with E about this
+        masked_image = self.image[:, :, 0] * self.mask
 
-            # get width and height of image
-            width, height = self.img_fullres.width, self.img_fullres.height
+        # Open mask
+        self.img_fullres = Image.fromarray(masked_image)
 
-            # Resize so it fits on screen
-            screen_res = 256
-            self.scale_down_factor_screen = screen_res / np.min(
-                np.array([width, height]))
+        # get width and height of image
+        width, height = self.img_fullres.width, self.img_fullres.height
 
-            new_im_width = int(width * self.scale_down_factor_screen)
-            new_im_height = int(height * self.scale_down_factor_screen)
+        # Resize so it fits on screen
+        screen_res = 256
+        self.scale_down_factor_screen = screen_res / np.min(
+            np.array([width, height]))
 
-            img_screen = self.img_fullres.resize((new_im_width, new_im_height),
-                                                 Image.ANTIALIAS)
-            img_screen = ImageTk.PhotoImage(img_screen)
+        new_im_width = int(width * self.scale_down_factor_screen)
+        new_im_height = int(height * self.scale_down_factor_screen)
 
-            # Paint on screen
-            self.canvas3 = Canvas(self.master,
-                                  height=new_im_height + 100,
-                                  width=new_im_width)
-            self.canvas3.image = img_screen
-            self.canvas3.create_image(0, 0, anchor='nw', image=self.canvas3.image)
-            self.canvas3.pack()
+        img_screen = self.img_fullres.resize((new_im_width, new_im_height),
+                                             Image.ANTIALIAS)
+        img_screen = ImageTk.PhotoImage(img_screen)
 
-            self.topx = 0
-            self.topy = 0
+        self.canvas3.config(width=new_im_width, height=new_im_height + 150)
+        self.canvas3.image = img_screen
+        self.canvas3.create_image(0, 0, anchor='nw', image=self.canvas3.image)
 
-            self.botx = 0
-            self.boty = 0
+        self.topx = 0
+        self.topy = 0
 
-            self.rect_id = None
+        self.botx = 0
+        self.boty = 0
 
-            self.rect_list = list()
-            self.rect_main_data = list()
+        self.rect_id = None
 
-            self.canvas3.update()
-            canvas_width = self.canvas3.winfo_width()
-            canvas_height = self.canvas3.winfo_height()
+        self.rect_list = list()
+        self.rect_main_data = list()
 
-            b1 = Button(self.master,
-                        text='Perform Registration',
-                        command=self.perform_registration,
-                        bg='brown',
-                        fg='white',
-                        font=('cambria', 9, 'bold'))
-            self.canvas3.create_window(canvas_width // 2,
-                                       canvas_height - 20,
-                                       anchor=tk.CENTER,
-                                       window=b1)
+        self.canvas3.update()
+        canvas_width = self.canvas3.winfo_width()
+        canvas_height = self.canvas3.winfo_height()
 
-            self.rect_id = self.canvas3.create_rectangle(self.topx, self.topy, self.topx, self.topy, dash=(2,2), fill='', outline='red')
+        self.b1 = Button(self.master,
+                         text='Create Mask',
+                         command=self.perform_registration,
+                         bg='brown',
+                         fg='white',
+                         font=('cambria', 9, 'bold'))
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 50,
+                                   anchor=tk.NE,
+                                   window=self.b1)
 
-            self.canvas3.bind('<Button-1>', self.get_mouse_posn)
-            self.canvas3.bind('<B1-Motion>', self.update_sel_rect)
-            self.canvas3.bind('<ButtonRelease-1>', self.draw_rect)
-            self.canvas3.bind('<Double-3>', self.onClear) 
+        self.b2 = Button(self.master,
+                         text='Next Image',
+                         command=self.next_img,
+                         bg='brown',
+                         fg='white',
+                         font=('cambria', 9, 'bold'))
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 50,
+                                   anchor=tk.NW,
+                                   window=self.b2)
 
-            self.canvas3.update()
+        self.rect_id = self.canvas3.create_rectangle(self.topx,
+                                                     self.topy,
+                                                     self.topx,
+                                                     self.topy,
+                                                     dash=(2, 2),
+                                                     fill='',
+                                                     outline='red')
 
-        self.master.destroy()
+        self.canvas3.bind('<Button-1>', self.get_mouse_posn)
+        self.canvas3.bind('<B1-Motion>', self.update_sel_rect)
+        self.canvas3.bind('<ButtonRelease-1>', self.draw_rect)
+        self.canvas3.bind('<Double-3>', self.onClear)
 
+        self.canvas3.update()
 
     def perform_registration(self):
-        print(self.rect_list)
-
         for idx, rect_coords in enumerate(self.rect_list):
-            self.rect_list[idx] = np.array(np.array(rect_coords) // self.scale_down_factor_screen, dtype='int')
-
-        print(self.rect_list)
+            self.rect_list[idx] = np.array(np.array(rect_coords) //
+                                           self.scale_down_factor_screen,
+                                           dtype='int')
 
         binary_mask = np.zeros_like(self.image)
-        # for every rectangle: # assuming a single channel
         for idx, rectangle in enumerate(self.rect_list, 1):
-
             # Find all unique indices of label image inside rectangle (> 0)
             x1, y1, x2, y2 = rectangle
+
             # rectangle_image = self.image[y1:y2, x1:x2]
             # uniq_idxs = rectangle_image[rectangle_image > 0]
 
             # create binary mask with all regions of label image wtih such indices
-            binary_mask[y1:y2+1, x1:x2+1] = idx
+            binary_mask[y1:y2 + 1, x1:x2 + 1] = idx
 
             # set pixesl of mask to r in result
             am = np.ma.masked_where(self.image > 0, self.image)
 
             binary_mask = binary_mask * am.mask
 
-        np.save(os.path.join(self.output_folder_path, 'some_mask.npy'), binary_mask)
+            input_path, input_ext = os.path.splitext(self.current_image)
+            _, input_name = os.path.split(input_path)
+            self.output_mask = input_name + '_mask' + '.npy'
 
+        np.save(os.path.join(self.output_folder_path, self.output_mask),
+                binary_mask)
 
     def clearFrame(self, frame):
         """clears the previous frame
@@ -294,21 +292,32 @@ class Application(Frame):
         """Input directory selection
         """
         self.input_folder_path = filedialog.askdirectory()
+        self.input_images = sorted(
+            glob.glob(os.path.join(self.input_folder_path, '*.*')))
 
     def open_mask_folder(self):
         """Input directory selection
         """
         self.mask_folder_path = filedialog.askdirectory()
+        # Go over masks
+        self.mask_images = sorted(
+            glob.glob(os.path.join(self.mask_folder_path, '*.*')))
 
     def get_mouse_posn(self, event):
         self.topx, self.topy = event.x, event.y
 
     def update_sel_rect(self, event):
         self.botx, self.boty = event.x, event.y
-        self.canvas3.coords(self.rect_id, self.topx, self.topy, self.botx, self.boty)  # Update selection rect.
+        self.canvas3.coords(self.rect_id, self.topx, self.topy, self.botx,
+                            self.boty)  # Update selection rect.
 
     def draw_rect(self, event):
-        draw_data = self.canvas3.create_rectangle(self.topx, self.topy, self.botx, self.boty, outline="green", fill="")
+        draw_data = self.canvas3.create_rectangle(self.topx,
+                                                  self.topy,
+                                                  self.botx,
+                                                  self.boty,
+                                                  outline="green",
+                                                  fill="")
         self.rect_list.append((self.topx, self.topy, self.botx, self.boty))
         self.rect_main_data.append(draw_data)
 
@@ -318,10 +327,10 @@ class Application(Frame):
         if (len(self.rect_main_data) > 0):
             for rect in self.rect_main_data:
                 self.canvas3.delete(rect)
-        
+
         self.rect_main_data.clear()
         self.rect_list.clear()
-       
+
         self.topx = 0
         self.topy = 0
 
@@ -329,26 +338,13 @@ class Application(Frame):
         self.boty = 0
 
         self.canvas3.create_image(0, 0, anchor='nw', image=self.canvas3.image)
-        self.rect_id = self.canvas3.create_rectangle(self.topx, self.topy, self.topx, self.topy, dash=(2,2), fill='', outline='red')
-        
-    def pseudo_apply_segmentation(self):
-        if apply_segmentation(self.input_folder_path, self.output_folder_path,
-                              self.npy_file_path):
-            npz_lbl = Label(
-                self.master,
-                text='Training Successful!! \n Window will close in 5 seconds',
-                font=('Cambria', 10),
-                fg='green')
-            npz_lbl.grid(row=5, columnspan=3, padx=20)
-
-            time.sleep(2)
-            self.master.destroy()
-        else:
-            npz_lbl = Label(self.master,
-                            text='Training Failed!!!\n Please check',
-                            font=('Cambria', 10),
-                            fg='red')
-            npz_lbl.grid(row=5, columnspan=3, padx=10)
+        self.rect_id = self.canvas3.create_rectangle(self.topx,
+                                                     self.topy,
+                                                     self.topx,
+                                                     self.topy,
+                                                     dash=(2, 2),
+                                                     fill='',
+                                                     outline='red')
 
 
 if __name__ == '__main__':
