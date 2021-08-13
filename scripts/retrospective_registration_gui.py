@@ -2,12 +2,11 @@ import glob
 import os
 import tkinter as tk
 from tkinter import *
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox
 
 import cv2
 import numpy as np
-from PIL import Image, ImageTk
-from registration import registration
+from PIL import Image, ImageTk, UnidentifiedImageError
 
 
 class Application(Frame):
@@ -20,8 +19,6 @@ class Application(Frame):
 
         self.true_width = None
         self.true_height = None
-        self.scale_down_factor_screen = None
-        self.pos_tuple = None
 
         # Staer Application Window
         self.master = master
@@ -126,9 +123,25 @@ class Application(Frame):
             text='Register Images',
             bg='brown',
             fg='white',
-            command=self.performRegistration,
+            command=self.create_mask_section,
         )
         self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
+
+    def create_mask_section(self):
+        # Clear canvas for the next screen
+        self.clearFrame(self.canvas2)
+
+        # Paint on screen
+        self.canvas3 = Canvas(self.master)
+        self.canvas3.pack()
+
+        # assuming the images have been matched
+        self.input_images = iter(self.input_images)
+
+        # show the first image
+        self.next_img()
+
+        self.canvas3.update()
 
     def clearFrame(self, frame):
         """clears the previous frame
@@ -148,101 +161,110 @@ class Application(Frame):
         """Input directory selection
         """
         self.input_folder_path = filedialog.askdirectory()
+        self.input_images = sorted(
+            glob.glob(os.path.join(self.input_folder_path, '*.*')))
 
     def open_output_folder(self):
         """Output directory selection
         """
         self.output_folder_path = filedialog.askdirectory()
 
-    def performRegistration(self):
+    def next_img(self):
+        try:
+            self.input_image = next(self.input_images)
+        except StopIteration:
+            messagebox.showinfo(
+                title='End of Images',
+                message='No More Images to Process\n Quit Program')
 
-        # Clear canvas for the next screen
-        self.clearFrame(self.canvas2)
+            self.master.destroy()
+            return
 
-        # Go over images
-        input_images = sorted(
-            glob.glob(os.path.join(self.input_folder_path, '*.*')))
+        input_path, input_ext = os.path.splitext(self.input_image)
+        _, input_name = os.path.split(input_path)
+        self.output_image = os.path.join(self.output_folder_path,
+                                         input_name + '_deformed' + input_ext)
 
-        for input_image in input_images:
+        self.pos_tuple = []
 
-            input_path, input_ext = os.path.splitext(input_image)
-            _, input_name = os.path.split(input_path)
-            self.output_image = os.path.join(
-                self.output_folder_path, input_name + '_deformed' + input_ext)
+        # Open image
+        try:
+            self.img_fullres = Image.open(self.input_image)
+        except UnidentifiedImageError:
+            self.next_img()
 
-            self.pos_tuple = []
+        # get width and height of image
+        width, height = self.img_fullres.width, self.img_fullres.height
 
-            # Open image
-            self.img_fullres = Image.open(input_image)
+        # Resize so if fits on screen
+        screen_res = 256
+        self.scale_down_factor_screen = screen_res / np.min(
+            np.array([width, height]))
 
-            # get width and height of image
-            width, height = self.img_fullres.width, self.img_fullres.height
+        new_im_width = int(width * self.scale_down_factor_screen)
+        new_im_height = int(height * self.scale_down_factor_screen)
 
-            # Resize so if fits on screen
-            screen_res = 256
-            self.scale_down_factor_screen = screen_res / np.min(
-                np.array([width, height]))
+        img_screen = self.img_fullres.resize((new_im_width, new_im_height),
+                                             Image.ANTIALIAS)
 
-            new_im_width = int(width * self.scale_down_factor_screen)
-            new_im_height = int(height * self.scale_down_factor_screen)
+        img_screen = ImageTk.PhotoImage(img_screen)
 
-            img_screen = self.img_fullres.resize((new_im_width, new_im_height),
-                                                 Image.ANTIALIAS)
-            img_screen = ImageTk.PhotoImage(img_screen)
+        # Paint on screen
+        self.canvas3.config(height=new_im_height + 150, width=new_im_width)
+        self.canvas3.image = img_screen
+        self.canvas3.create_image(0, 0, anchor='nw', image=img_screen)
+        self.canvas3.pack()
 
-            # Paint on screen
-            self.canvas3 = Canvas(self.master,
-                                  height=new_im_height + 100,
-                                  width=new_im_width)
-            self.canvas3.image = img_screen
-            self.canvas3.create_image(0, 0, anchor='nw', image=img_screen)
-            self.canvas3.pack()
+        self.canvas3.update()
+        canvas_width = self.canvas3.winfo_width()
+        canvas_height = self.canvas3.winfo_height()
 
-            self.canvas3.update()
-            canvas_width = self.canvas3.winfo_width()
-            canvas_height = self.canvas3.winfo_height()
+        w = Label(self.master, text="Width: ", font=('Cambria', 10, 'bold'))
+        self.e1 = Entry(self.master, width=10)
 
-            w = Label(self.master,
-                      text="Width: ",
-                      font=('Cambria', 10, 'bold'))
-            self.e1 = Entry(self.master, width=10)
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 105,
+                                   anchor=tk.NE,
+                                   window=w)
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 105,
+                                   anchor=tk.NW,
+                                   window=self.e1)
 
-            self.canvas3.create_window(canvas_width // 2,
-                                       canvas_height - 85,
-                                       anchor=tk.NE,
-                                       window=w)
-            self.canvas3.create_window(canvas_width // 2,
-                                       canvas_height - 85,
-                                       anchor=tk.NW,
-                                       window=self.e1)
+        h = Label(self.master, text="Height: ", font=('Cambria', 10, 'bold'))
+        self.e2 = Entry(self.master, width=10)
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 80,
+                                   anchor=tk.NE,
+                                   window=h)
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 80,
+                                   anchor=tk.NW,
+                                   window=self.e2)
 
-            h = Label(self.master,
-                      text="Height: ",
-                      font=('Cambria', 10, 'bold'))
-            self.e2 = Entry(self.master, width=10)
-            self.canvas3.create_window(canvas_width // 2,
-                                       canvas_height - 60,
-                                       anchor=tk.NE,
-                                       window=h)
-            self.canvas3.create_window(canvas_width // 2,
-                                       canvas_height - 60,
-                                       anchor=tk.NW,
-                                       window=self.e2)
+        self.b1 = Button(self.master,
+                         text='Register',
+                         command=self.perform_registration,
+                         bg='brown',
+                         fg='white',
+                         font=('cambria', 9, 'bold'))
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 40,
+                                   anchor=tk.NE,
+                                   window=self.b1)
 
-            b1 = Button(self.master,
-                        text='Perform Registration',
-                        command=self.perform_registration,
-                        bg='brown',
-                        fg='white',
-                        font=('cambria', 9, 'bold'))
-            self.canvas3.create_window(canvas_width // 2,
-                                       canvas_height - 20,
-                                       anchor=tk.CENTER,
-                                       window=b1)
+        self.b2 = Button(self.master,
+                         text='Next',
+                         command=self.next_img,
+                         bg='brown',
+                         fg='white',
+                         font=('cambria', 9, 'bold'))
+        self.canvas3.create_window(canvas_width // 2,
+                                   canvas_height - 40,
+                                   anchor=tk.NW,
+                                   window=self.b2)
 
-            self.canvas3.bind("<Button-1>", self.click)
-
-        # self.master.destroy()
+        self.canvas3.bind("<Button-1>", self.click)
 
     def perform_registration(self):
         """This function performs the registration and close the GUI automatically

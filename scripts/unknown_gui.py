@@ -150,12 +150,7 @@ class Application(Frame):
                 message='No More Images to Process\n Quit Program')
 
             self.master.destroy()
-
             return
-
-        input_path, input_ext = os.path.splitext(self.current_image)
-        _, input_name = os.path.split(input_path)
-        self.output_image = input_name + '_deformed' + input_ext
 
         # Open image
         self.image = skimage.io.imread(self.current_image)
