@@ -91,12 +91,12 @@ class Application(Frame):
         x1, y1 = (event.x - 1), (event.y - 1)
         x2, y2 = (event.x + 1), (event.y + 1)
         self.canvas2.create_oval(x1,
-                                y1,
-                                x2,
-                                y2,
-                                outline='blue',
-                                fill='blue',
-                                width=5)
+                                 y1,
+                                 x2,
+                                 y2,
+                                 outline='blue',
+                                 fill='blue',
+                                 width=5)
 
     def clearFrame(self, frame):
         # destroy all widgets from frame
@@ -339,7 +339,6 @@ class Application(Frame):
                                    canvas_height - 50,
                                    anchor=tk.CENTER,
                                    window=b1)
-
 
         self.canvas2.bind("<Button-1>", self.click)
 
