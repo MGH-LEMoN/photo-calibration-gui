@@ -3,10 +3,11 @@ import os
 
 import cv2
 import numpy as np
-from functions import compute_gaussian_scaled_space_features
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+
+from functions import compute_gaussian_scaled_space_features
 
 
 def train_segmentation(input_image_dir=None,

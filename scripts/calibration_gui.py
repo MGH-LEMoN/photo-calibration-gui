@@ -1,7 +1,7 @@
 import os
+import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
-import tkinter as tk
 
 import cv2
 import numpy as np
