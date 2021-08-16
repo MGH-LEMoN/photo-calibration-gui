@@ -20,62 +20,45 @@ class Application(Frame):
         self.true_width = None
         self.true_height = None
 
-        # Staer Application Window
+        # Start Application Window
         self.master = master
-        self.master.title('Retrospective photo Registration GUI')
+        self.master.title('Photo Registration GUI')
 
-        # Create canvas for widgets
-        self.canvas1 = Canvas(master, width=400, height=350)
+        words = [
+            "Welcome to the Retrospective Photo Registration GUI",
+            '!!! Instructions !!!',
+            '1. Select the directory where the input images are',
+            '2. Select the directory where you want the output images saved',
+            '3. Click on 4 corners of a rectangle for every image and provide the dimensions in mm',
+            '4. Click on Register buttom and wait until the program loads the next image'
+        ]
+
+        canvas_width, canvas_height = 600, 250
+
+        self.canvas1 = Canvas(self.master,
+                              width=canvas_width,
+                              height=canvas_height)
+
+        word_pos = [(int(canvas_width // 2), 20), (int(canvas_width // 2), 40),
+                    (20, 60), (20, 80), (20, 100), (20, 120)]
+        word_anchor = [tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW]
+
+        object_id = []
+        for word, (x, y), anchor in zip(words, word_pos, word_anchor):
+            id = self.canvas1.create_text(x, y, anchor=anchor, text=word)
+            object_id.append(id)
         self.canvas1.pack()
 
-        self.label1 = Label(
-            self.master,
-            text='Welcome to the *retrospective*\n Photo Registration GUI')
-        self.label1.config(font=('cambria', 14))
-        self.canvas1.create_window(175, 25, window=self.label1)
+        btn = Button(text='Click to Start',
+                     command=self.fileUploadWindow,
+                     bg='brown',
+                     fg='white',
+                     font=('cambria', 9, 'bold'),
+                     justify='center')
+        self.canvas1.create_window(int(canvas_width // 2), 225, window=btn)
 
-        self.label_inst = Label(self.master, text='!!! Instructions !!!')
-        self.label_inst.config(font=('cambria', 12, 'bold'))
-        self.canvas1.create_window(175, 75, window=self.label_inst)
-
-        self.inst_1 = Label(
-            master,
-            text='1. Select the directory \n where the input images are')
-        self.inst_1.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 100, window=self.inst_1)
-
-        self.inst_2 = Label(
-            master,
-            text=
-            '2. Select the directory where \n you want the output images saved'
-        )
-        self.inst_2.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 135, window=self.inst_2)
-
-        self.inst_3 = Label(
-            self.master,
-            wraplength=325,
-            text=
-            '3. Click on 4 corners of a rectangle \n for every image and \n provide the dimensions in mm'
-        )
-        self.inst_3.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 175, window=self.inst_3)
-
-        self.inst_6 = Label(
-            self.master,
-            wraplength=325,
-            text=
-            '4. Click on Register buttom and \n wait until the program loads the next image'
-        )
-        self.inst_6.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 225, window=self.inst_6)
-
-        self.btn = Button(text='Click to Start',
-                          command=self.fileUploadWindow,
-                          bg='brown',
-                          fg='white',
-                          font=('cambria', 9, 'bold'))
-        self.canvas1.create_window(175, 275, window=self.btn)
+        self.canvas1.itemconfigure(1, font=('cambria', 12, 'bold'))
+        self.canvas1.itemconfigure(2, font=('cambria', 10))
 
     def fileUploadWindow(self):
         """Contains code to generate the second window in the application

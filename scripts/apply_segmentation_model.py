@@ -3,9 +3,8 @@ import os
 
 import cv2
 import numpy as np
-from sklearn.pipeline import make_pipeline
-
 from functions import compute_gaussian_scaled_space_features
+from sklearn.pipeline import make_pipeline
 
 
 def apply_segmentation(input_image_dir=None,

@@ -1,12 +1,11 @@
 import glob
 import os
-from tkinter import *
 import tkinter as tk
+from tkinter import *
 from tkinter import filedialog, messagebox, ttk
 
 import cv2
 import numpy as np
-
 from registration import registration
 
 
@@ -19,7 +18,7 @@ class Application(Frame):
         self.output_folder_path = None
         self.npz_file_path = None
 
-        # Staer Application Window
+        # Start Application Window
         self.master = master
         self.master.title('Photo Registration GUI')
 
@@ -31,8 +30,7 @@ class Application(Frame):
             '4. Click on Perform Calibration and wait until the program quits automatically'
         ]
 
-        canvas_width = 600
-        canvas_height = 250
+        canvas_width, canvas_height = 600, 250
 
         self.canvas1 = Canvas(self.master,
                               width=canvas_width,
