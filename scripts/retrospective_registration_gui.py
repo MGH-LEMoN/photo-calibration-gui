@@ -22,7 +22,7 @@ class Application(Frame):
 
         # Start Application Window
         self.master = master
-        self.master.title('Photo Registration GUI')
+        self.master.title('Retrospective Photo Registration GUI')
 
         words = [
             "Welcome to the Retrospective Photo Registration GUI",
