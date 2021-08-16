@@ -17,67 +17,45 @@ class Application(Frame):
 
         self.master.title('Photo Calibration GUI')
 
-        # Create canvas for widgets
-        self.canvas1 = Canvas(self.master, width=350, height=350)
+        words = [
+            "Welcome to the Photo Calibration GUI",
+            '!!! Instructions !!!',
+            '1. Upload the template using the button below',
+            '2. You will see 4 card suits surrounded by circles',
+            '3. Starting at the NW corner, click on the center of the suit followed by another click on the edge',
+            '4. The order should be NW, SE, SW and SE',
+            '5. Enter width and height (in mm) in the entry fields',
+            '6. Click on Perform Calibration and wait until the program quits automatically',
+        ]
+
+        canvas_width, canvas_height = 600, 250
+        self.canvas1 = Canvas(self.master,
+                              width=canvas_width,
+                              height=canvas_height)
+
+        word_pos = [(int(canvas_width // 2), 20), (int(canvas_width // 2), 40),
+                    (20, 60), (20, 80), (20, 100), (20, 120), (20, 140),
+                    (20, 160)]
+        word_anchor = [
+            tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW, tk.NW, tk.NW
+        ]
+
+        object_id = []
+        for word, (x, y), anchor in zip(words, word_pos, word_anchor):
+            id = self.canvas1.create_text(x, y, anchor=anchor, text=word)
+            object_id.append(id)
         self.canvas1.pack()
-
-        label1 = Label(self.master,
-                       text='Welcome to the Photo Calibration GUI')
-        label1.config(font=('cambria', 14))
-        self.canvas1.create_window(175, 25, window=label1)
-
-        label_inst = Label(self.master, text='!!! Instructions !!!')
-        label_inst.config(font=('cambria', 12, 'bold'))
-        self.canvas1.create_window(175, 60, window=label_inst)
-
-        inst_1 = Label(self.master,
-                       text='1. Upload the template using the button below')
-        inst_1.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 80, window=inst_1)
-
-        inst_2 = Label(
-            self.master,
-            text='2. You will see 4 card suits surrounded by circles')
-        inst_2.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 100, window=inst_2)
-
-        inst_3 = Label(
-            self.master,
-            wraplength=325,
-            text=
-            '3. Starting at the NW corner, click on the center of the suit followed by another click on the edge'
-        )
-        inst_3.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 130, window=inst_3)
-
-        inst_4 = Label(self.master,
-                       wraplength=325,
-                       text='4. The order should be NW, SE, SW and SE')
-        inst_4.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 160, window=inst_4)
-
-        inst_5 = Label(
-            self.master,
-            wraplength=325,
-            text='5. Enter width and height (in mm) in the entry fields')
-        inst_5.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 185, window=inst_5)
-
-        inst_6 = Label(
-            self.master,
-            wraplength=325,
-            text=
-            '6. Click on Perform Calibration and wait until the program quits automatically'
-        )
-        inst_6.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 220, window=inst_6)
 
         btn = Button(text='Browse Image',
                      command=self.showimage,
                      bg='brown',
                      fg='white',
-                     font=('cambria', 9, 'bold'))
-        self.canvas1.create_window(175, 275, window=btn)
+                     font=('cambria', 9, 'bold'),
+                     justify='center')
+        self.canvas1.create_window(int(canvas_width // 2), 225, window=btn)
+
+        self.canvas1.itemconfigure(1, font=('cambria', 12, 'bold'))
+        self.canvas1.itemconfigure(2, font=('cambria', 10))
 
     def click(self, event):
         """Replacement mouse handler inside Canvas, draws a blue ball on each click"""
