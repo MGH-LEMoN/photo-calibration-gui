@@ -20,54 +20,44 @@ class Application(Frame):
         self.output_folder_path = None
         self.npz_file_path = None
 
-        # Staer Application Window
+        # Start Application Window
         self.master = master
         self.master.title('Unknown GUI')
-        self.master.resizable(0, 0)  # fix window
 
-        # Create canvas for widgets
-        self.canvas1 = Canvas(master, width=400, height=350)
+        words = [
+            "Welcome to the Unknown GUI", '!!! Instructions !!!',
+            '1. Select the directory with input images',
+            '2. Select the directory where you want the output images saved',
+            '3. Select the path to the output file',
+            '4. Click on Apply Segmentation and wait until the program quits automatically'
+        ]
+
+        canvas_width, canvas_height = 600, 250
+
+        self.canvas1 = Canvas(self.master,
+                              width=canvas_width,
+                              height=canvas_height)
+
+        word_pos = [(int(canvas_width // 2), 20), (int(canvas_width // 2), 40),
+                    (20, 60), (20, 80), (20, 100), (20, 120)]
+        word_anchor = [tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW]
+
+        object_id = []
+        for word, (x, y), anchor in zip(words, word_pos, word_anchor):
+            id = self.canvas1.create_text(x, y, anchor=anchor, text=word)
+            object_id.append(id)
         self.canvas1.pack()
 
-        self.label1 = Label(self.master, text='Welcome to the\n Unknown GUI')
-        self.label1.config(font=('cambria', 14))
-        self.canvas1.create_window(175, 25, window=self.label1)
+        btn = Button(text='Click to Start',
+                     command=self.fileUploadWindow,
+                     bg='brown',
+                     fg='white',
+                     font=('cambria', 9, 'bold'),
+                     justify='center')
+        self.canvas1.create_window(int(canvas_width // 2), 225, window=btn)
 
-        self.label_inst = Label(self.master, text='!!! Instructions !!!')
-        self.label_inst.config(font=('cambria', 12, 'bold'))
-        self.canvas1.create_window(175, 75, window=self.label_inst)
-
-        self.inst_2 = Label(
-            master, text='1. Select the directory where the input images are')
-        self.inst_2.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 90, window=self.inst_2)
-
-        self.inst_3 = Label(self.master,
-                            wraplength=325,
-                            text='2. Select the directory where the masks are')
-        self.inst_3.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 110, window=self.inst_3)
-
-        self.inst_1 = Label(master,
-                            text='3. Select the path to the output file')
-        self.inst_1.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 140, window=self.inst_1)
-
-        self.inst_6 = Label(
-            self.master,
-            wraplength=325,
-            text=
-            '4. Click on Perform Calibration and wait until the program quits automatically'
-        )
-        self.inst_6.config(font=('cambria', 10))
-        self.canvas1.create_window(175, 220, window=self.inst_6)
-
-        self.btn = Button(text='Click to Start',
-                          command=self.fileUploadWindow,
-                          bg='brown',
-                          fg='white',
-                          font=('cambria', 9, 'bold'))
-        self.canvas1.create_window(175, 275, window=self.btn)
+        self.canvas1.itemconfigure(1, font=('cambria', 12, 'bold'))
+        self.canvas1.itemconfigure(2, font=('cambria', 10))
 
     def fileUploadWindow(self):
         """Contains code to generate the second window in the application
