@@ -23,53 +23,6 @@ class Application(Frame):
         self.master = master
         self.master.title('Photo Registration GUI')
 
-        # # Create canvas for widgets
-        # self.canvas1 = Canvas(master, width=400, height=350)
-        # self.canvas1.pack()
-
-        # self.label1 = Label(self.master,
-        #                     text='Welcome to the\n Photo Registration GUI')
-        # self.label1.config(font=('cambria', 14))
-        # self.canvas1.create_window(175, 25, window=self.label1)
-
-        # self.label_inst = Label(self.master, text='!!! Instructions !!!')
-        # self.label_inst.config(font=('cambria', 12, 'bold'))
-        # self.canvas1.create_window(175, 75, window=self.label_inst)
-
-        # self.inst_1 = Label(
-        #     master, text='1. Select the path to the calibration output file')
-        # self.inst_1.config(font=('cambria', 10))
-        # self.canvas1.create_window(175, 90, window=self.inst_1)
-
-        # self.inst_2 = Label(
-        #     master, text='2. Select the directory where the input images are')
-        # self.inst_2.config(font=('cambria', 10))
-        # self.canvas1.create_window(175, 110, window=self.inst_2)
-
-        # self.inst_3 = Label(
-        #     self.master,
-        #     wraplength=325,
-        #     text=
-        #     '3. Select the directory where you want the output images saved')
-        # self.inst_3.config(font=('cambria', 10))
-        # self.canvas1.create_window(175, 140, window=self.inst_3)
-
-        # self.inst_6 = Label(
-        #     self.master,
-        #     wraplength=325,
-        #     text=
-        #     '4. Click on Perform Calibration and wait until the program quits automatically'
-        # )
-        # self.inst_6.config(font=('cambria', 10))
-        # self.canvas1.create_window(175, 220, window=self.inst_6)
-
-        # self.btn = Button(text='Click to Start',
-        #                   command=self.fileUploadWindow,
-        #                   bg='brown',
-        #                   fg='white',
-        #                   font=('cambria', 9, 'bold'))
-        # self.canvas1.create_window(175, 275, window=self.btn)
-
         words = [
             "Welcome to the Photo Registration GUI", '!!! Instructions !!!',
             '1. Select the path to the calibration output file',
