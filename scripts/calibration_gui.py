@@ -65,16 +65,30 @@ class Application(Frame):
         self.pos_tuple.append(
             [event.x * self.scale_up_factor, event.y * self.scale_up_factor])
 
-        # Place a blue dot at every click of mouse
-        x1, y1 = (event.x - 1), (event.y - 1)
-        x2, y2 = (event.x + 1), (event.y + 1)
-        self.canvas2.create_oval(x1,
-                                 y1,
-                                 x2,
-                                 y2,
-                                 outline='blue',
-                                 fill='blue',
-                                 width=5)
+        # Place a blue dot when mouse clicked on center of fiducial
+        # and a red circle when click on on the circule around the fiducial
+        if len(self.pos_tuple) % 2 == 1: # center
+            x1, y1 = (event.x - 1), (event.y - 1)
+            x2, y2 = (event.x + 1), (event.y + 1)
+            self.canvas2.create_oval(x1,
+                                     y1,
+                                     x2,
+                                     y2,
+                                     outline='blue',
+                                     fill='blue',
+                                     width=5)
+        else:
+            rad = np.sqrt(np.sum((np.array(self.pos_tuple[-2]) - np.array(self.pos_tuple[-1])) ** 2)) / self.scale_up_factor
+            x, y = self.pos_tuple[-2] / self.scale_up_factor
+            x1, y1 = (x - rad), (y - rad)
+            x2, y2 = (x + rad), (y + rad)
+            self.canvas2.create_oval(x1,
+                                     y1,
+                                     x2,
+                                     y2,
+                                     outline='red',
+                                     fill=None,
+                                     width=5)
 
     def clearFrame(self, frame):
         # destroy all widgets from frame
