@@ -75,7 +75,7 @@ def registration(true_width,
                              for m in matches]).reshape(-1, 1, 2)
 
     # Fit transform and apply to corner
-    M, _ = cv2.findHomography(template_pts, target_pts, cv2.RANSAC, 5.0)
+    M, _ = cv2.findHomography(template_pts, target_pts, cv2.RANSAC, 2.0)
     centers_target = cv2.perspectiveTransform(centers.reshape(-1, 1, 2), M)
 
     if DEBUG:
@@ -146,7 +146,7 @@ def registration(true_width,
                                          (ref_coords[1, 0, 0].astype(int) + 1,
                                           ref_coords[2, 0, 1].astype(int) + 1))
 
-    cv2.imwrite(output_image, cv2.cvtColor(deformed_image, cv2.COLOR_RGB2BGR))
+    cv2.imwrite(output_image, deformed_image)
 
     if DEBUG:
         plt.figure(), plt.imshow(deformed_image, aspect='equal'), plt.title(
