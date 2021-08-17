@@ -9,17 +9,17 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 
+
 def train_segmentation(input_image_dir=None,
                        input_mask_dir=None,
                        output_dir=None):
 
-    # TODO: get these 2 directories from a GUI
     # input_image_dir = '/autofs/cluster/vive/UW_photo_recon/code/fiducialsMGH/training/images'
     # input_mask_dir = '/autofs/cluster/vive/UW_photo_recon/code/fiducialsMGH/training/masks'
 
-    # TODO: get file where the SVM is stored from a GUI
-    output_dir = os.getcwd() if output_dir is None else output_dir
+    # output_dir = os.getcwd() if output_dir is None else output_dir
     output_file = os.path.join(output_dir, 'SVM.npy')
+
 
     try:
         # We don't operate at full resolution, but an image downsampled by this factor
@@ -29,7 +29,7 @@ def train_segmentation(input_image_dir=None,
         # Scales (Gaussian sigmas) at which derivatives are computed
         feat_scales = np.array([0, 3, 6, 9])
         # pixels per image and class used in training
-        npix_per_image_and_class = 2000
+        npix_per_image_and_class = 5000
         # verbosity for svm training: 0, 1 or 2
         verbosity = 1
 
@@ -46,12 +46,9 @@ def train_segmentation(input_image_dir=None,
                     if ox + oy == order:
                         count = count + 1
 
-        nfeats = 3 * count * len(feat_scales)  # 3 is for RGB
-
         # Gather features
-        F = np.zeros((npix_per_image_and_class * 2 * n_im, nfeats))
-        t = np.zeros(npix_per_image_and_class * 2 * n_im)
-        ind_p = 0
+        F = list()
+        t = list()
         for i in range(n_im):
             print('Gathering features of image %d of %d' % (i + 1, n_im))
 
@@ -72,12 +69,12 @@ def train_segmentation(input_image_dir=None,
             # Randomly select pixels for training
             idx = np.where(Mr.flatten())
             rp = np.random.permutation(len(idx[0]))
-            rp = rp[0:npix_per_image_and_class]
+            rp = rp[0:min(npix_per_image_and_class, len(idx[0]))]
             idx_pos = idx[0][rp]
 
             idx = np.where(Mr.flatten() == False)
             rp = np.random.permutation(len(idx[0]))
-            rp = rp[0:npix_per_image_and_class]
+            rp = rp[0:min(npix_per_image_and_class, len(idx[0]))]
             idx_neg = idx[0][rp]
 
             # Compute features
@@ -87,21 +84,21 @@ def train_segmentation(input_image_dir=None,
                 (feats.shape[0] * feats.shape[1], feats.shape[2]))
 
             # Store features of randomly selected pixels
-            F[ind_p:ind_p + npix_per_image_and_class, :] = feats[idx_pos, :]
-            F[ind_p + npix_per_image_and_class:ind_p +
-              2 * npix_per_image_and_class, :] = feats[idx_neg, :]
+            F.append(feats[idx_pos, :])
+            F.append(feats[idx_neg, :])
 
-            t[ind_p:ind_p + npix_per_image_and_class] = 1
-            t[ind_p + npix_per_image_and_class + 1:ind_p +
-              2 * npix_per_image_and_class] = 0
+            t.append(np.ones_like(idx_pos))
+            t.append(np.zeros_like(idx_neg))
 
-            ind_p = ind_p + 2 * npix_per_image_and_class
+
+        t = np.concatenate(t)
+        F = np.concatenate(F)
 
         # Now we can train the SVM
         print('SVM training')
 
         clf = make_pipeline(StandardScaler(), SVC(kernel='linear',
-                                                  verbose=True))
+                                                  verbose=verbosity))
         clf.fit(F, t)
 
         print('Done! Saving to disk')
@@ -113,3 +110,4 @@ def train_segmentation(input_image_dir=None,
         return 1
     except Exception as e:
         return 0
+
