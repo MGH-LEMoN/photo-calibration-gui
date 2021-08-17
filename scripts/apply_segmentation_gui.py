@@ -70,7 +70,7 @@ class Application(Frame):
         npz_lbl.grid(row=0, column=0, padx=20)
 
         npz_btn = Button(self.master,
-                         text='Choose Folder',
+                         text='Choose File',
                          font=('Cambria', 10, 'bold'),
                          command=self.open_input_folder)
         npz_btn.grid(row=0, column=1, padx=20)
@@ -81,7 +81,7 @@ class Application(Frame):
         input_lbl.grid(row=1, column=0, padx=20)
 
         input_lbl_btn = Button(self.master,
-                               text='Choose Folder ',
+                               text='Choose Folder',
                                font=('Cambria', 10, 'bold'),
                                command=self.open_npy_file)
         input_lbl_btn.grid(row=1, column=1, padx=20)
@@ -92,7 +92,7 @@ class Application(Frame):
         output_lbl.grid(row=2, column=0, padx=20)
 
         output_lbl_btn = Button(self.master,
-                                text='Select directory to save ',
+                                text='Choose Folder',
                                 font=('Cambria', 10, 'bold'),
                                 command=self.open_output_folder)
         output_lbl_btn.grid(row=2, column=1, padx=20)
