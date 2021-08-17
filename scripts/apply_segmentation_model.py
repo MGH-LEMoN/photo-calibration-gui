@@ -10,11 +10,9 @@ from sklearn.pipeline import make_pipeline
 def apply_segmentation(input_image_dir=None,
                        output_mask_dir=None,
                        model_file=None):
-    # TODO: get these 2 directories from a GUI
-    # input_image_dir = '/autofs/cluster/vive/UW_photo_recon/code/fiducialsMGH/test_images/ADRC 2531/'
-    # output_mask_dir = '/tmp/masks'
 
-    # TODO: get file where the SVM is stored from a GUI, must be a npy file
+    # input_image_dir = '/autofs/cluster/vive/UW_photo_recon/code/fiducialsMGH/test_images/ADRC 2531/'
+    # output_mask_dir = '/tmp/masks/'
     # model_file = '/tmp/SVM.npy'
 
     try:
@@ -67,14 +65,14 @@ def apply_segmentation(input_image_dir=None,
             # Predict with SVM
             yhat = np.array(clf.predict(feats))
             Mhat = yhat.reshape((Ir.shape[0], Ir.shape[1]))
-            Mfull = cv2.resize(Mhat, (I.shape[1], I.shape[0]),
+            Mfull = cv2.resize(Mhat.astype(float), (I.shape[1], I.shape[0]),
                                interpolation=cv2.INTER_LINEAR)
             Mfull[Mfull > 0.5] = 255
 
             # Write output
             fname = os.path.basename(im_files[i])
             name = os.path.splitext(fname)[0]
-            output_filename = output_mask_dir + '/' + name + '.automask.png'
+            output_filename = os.path.join(output_mask_dir, name + '.automask.png')
 
             cv2.imwrite(output_filename, np.uint8(Mfull))
         print('All done')
