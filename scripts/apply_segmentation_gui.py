@@ -21,9 +21,9 @@ class Application(Frame):
 
         words = [
             "Welcome to the Apply Segmentation GUI", '!!! Instructions !!!',
-            '1. Select the directory with input images',
-            '2. Select the directory where you want the output images saved',
-            '3. Select the path to the output file',
+            '1. Select the (input) directory with corrected images',
+            '2. Select the SVM.npy file',
+            '3. Select the directory where you want the output mask stored',
             '4. Click on Apply Segmentation and wait until the program quits automatically'
         ]
 
@@ -63,42 +63,38 @@ class Application(Frame):
         # Set window size
         self.master.geometry('600x200')
 
-        # Specify calibration file
         npz_lbl = Label(
             self.master,
-            text='Select directory to save output file (*.npy file)',
+            text='Select the (input) directory with corrected images',
             font=('Cambria', 10))
         npz_lbl.grid(row=0, column=0, padx=20)
 
         npz_btn = Button(self.master,
                          text='Choose Folder',
                          font=('Cambria', 10, 'bold'),
-                         command=self.open_output_folder)
+                         command=self.open_input_folder)
         npz_btn.grid(row=0, column=1, padx=20)
 
-        # Specify input images directory
-        input_lbl = Label(
-            self.master,
-            text='Select the input directory for uncorrected images ',
-            font=('Cambria', 10))
+        input_lbl = Label(self.master,
+                          text='Select the corresponding SVM.npy file',
+                          font=('Cambria', 10))
         input_lbl.grid(row=1, column=0, padx=20)
 
         input_lbl_btn = Button(self.master,
                                text='Choose Folder ',
                                font=('Cambria', 10, 'bold'),
-                               command=self.open_input_folder)
+                               command=self.open_npy_file)
         input_lbl_btn.grid(row=1, column=1, padx=20)
 
-        # Specify directory to store corrected images
         output_lbl = Label(self.master,
                            font=('Cambria', 10),
-                           text='Select the input directory for *.npy file \n')
+                           text='Select directory to store masks')
         output_lbl.grid(row=2, column=0, padx=20)
 
         output_lbl_btn = Button(self.master,
-                                text='Choose Folder ',
+                                text='Select directory to save ',
                                 font=('Cambria', 10, 'bold'),
-                                command=self.open_npy_file)
+                                command=self.open_output_folder)
         output_lbl_btn.grid(row=2, column=1, padx=20)
 
         upld = Button(self.master,
