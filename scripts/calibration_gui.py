@@ -22,10 +22,9 @@ class Application(Frame):
             '!!! Instructions !!!',
             '1. Upload the template using the button below',
             '2. You will see 4 card suits surrounded by circles',
-            '3. Starting at the NW corner, click on the center of the suit followed by another click on the edge',
-            '4. The order should be NW, SE, SW and SE',
-            '5. Enter width and height (in mm) in the entry fields',
-            '6. Click on Perform Calibration and wait until the program quits automatically',
+            '3. Click on the center of the suit immediately followed by another click on the edge',
+            '4. Enter width and height (in mm) in the entry fields',
+            '5. Click on Perform Calibration and wait until the program quits automatically',
         ]
 
         canvas_width, canvas_height = 600, 250
@@ -34,11 +33,8 @@ class Application(Frame):
                               height=canvas_height)
 
         word_pos = [(int(canvas_width // 2), 20), (int(canvas_width // 2), 40),
-                    (20, 60), (20, 80), (20, 100), (20, 120), (20, 140),
-                    (20, 160)]
-        word_anchor = [
-            tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW, tk.NW, tk.NW
-        ]
+                    (20, 60), (20, 80), (20, 100), (20, 120), (20, 140)]
+        word_anchor = [tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW, tk.NW]
 
         object_id = []
         for word, (x, y), anchor in zip(words, word_pos, word_anchor):
@@ -67,7 +63,7 @@ class Application(Frame):
 
         # Place a blue dot when mouse clicked on center of fiducial
         # and a red circle when click on on the circule around the fiducial
-        if len(self.pos_tuple) % 2 == 1: # center
+        if len(self.pos_tuple) % 2 == 1:  # center
             x1, y1 = (event.x - 1), (event.y - 1)
             x2, y2 = (event.x + 1), (event.y + 1)
             self.canvas2.create_oval(x1,
@@ -78,7 +74,10 @@ class Application(Frame):
                                      fill='blue',
                                      width=5)
         else:
-            rad = np.sqrt(np.sum((np.array(self.pos_tuple[-2]) - np.array(self.pos_tuple[-1])) ** 2)) / self.scale_up_factor
+            rad = np.sqrt(
+                np.sum(
+                    (np.array(self.pos_tuple[-2]) -
+                     np.array(self.pos_tuple[-1]))**2)) / self.scale_up_factor
             x, y = self.pos_tuple[-2] / self.scale_up_factor
             x1, y1 = (x - rad), (y - rad)
             x2, y2 = (x + rad), (y + rad)
@@ -296,7 +295,9 @@ class Application(Frame):
         canvas_width = self.canvas2.winfo_width()
         canvas_height = self.canvas2.winfo_height()
 
-        w = Label(self.master, text="Width: ", font=('Cambria', 10, 'bold'))
+        w = Label(self.master,
+                  text="Width (in mm): ",
+                  font=('Cambria', 10, 'bold'))
         self.e1 = Entry(self.master, width=10)
 
         self.canvas2.create_window(canvas_width // 2,
@@ -308,7 +309,9 @@ class Application(Frame):
                                    anchor=tk.NW,
                                    window=self.e1)
 
-        h = Label(self.master, text="Height: ", font=('Cambria', 10, 'bold'))
+        h = Label(self.master,
+                  text="Height (in mm): ",
+                  font=('Cambria', 10, 'bold'))
         self.e2 = Entry(self.master, width=10)
 
         self.canvas2.create_window(canvas_width // 2,
