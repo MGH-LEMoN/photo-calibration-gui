@@ -9,6 +9,7 @@ import numpy as np
 import skimage
 import skimage.io as io
 from PIL import Image, ImageTk
+from skimage.measure import label as bwlabel
 
 
 class Application(Frame):
@@ -146,10 +147,13 @@ class Application(Frame):
         self.image = skimage.io.imread(self.current_image)
 
         # Open mask
-        self.mask = skimage.io.imread(self.current_mask) > 128
+        self.mask = skimage.io.imread(self.current_mask, as_gray=True) > 128
+
+        # Create connected components
+        self.connected_components = bwlabel(self.mask)
 
         # check with E about this
-        masked_image = self.image[:, :, 0] * self.mask
+        masked_image = self.image * self.mask[:, :, np.newaxis]
 
         # Open mask
         self.img_fullres = Image.fromarray(masked_image)
@@ -231,25 +235,27 @@ class Application(Frame):
                                            self.scale_down_factor_screen,
                                            dtype='int')
 
-        binary_mask = np.zeros_like(self.image)
+        binary_mask = np.zeros(self.image.shape[0:2])
         for idx, rectangle in enumerate(self.rect_list, 1):
             # Find all unique indices of label image inside rectangle (> 0)
             x1, y1, x2, y2 = rectangle
 
-            # rectangle_image = self.image[y1:y2, x1:x2]
-            # uniq_idxs = rectangle_image[rectangle_image > 0]
+            if x1 > x2:
+                x1, x2 = x2, x1
+
+            if y1 > y2:
+                y1, y2 = y2, y1
 
             # create binary mask with all regions of label image wtih such indices
-            binary_mask[y1:y2 + 1, x1:x2 + 1] = idx
+            unique = np.unique(self.connected_components[y1:y2, x1:x2])
+            unique = unique[unique > 0]
 
-            # set pixesl of mask to r in result
-            am = np.ma.masked_where(self.image > 0, self.image)
+            for val in unique:
+                binary_mask[self.connected_components == val] = idx
 
-            binary_mask = binary_mask * am.mask
-
-            input_path, input_ext = os.path.splitext(self.current_image)
-            _, input_name = os.path.split(input_path)
-            self.output_mask = input_name + '_mask' + '.npy'
+        input_path, _ = os.path.splitext(self.current_image)
+        _, input_name = os.path.split(input_path)
+        self.output_mask = input_name + '_mask' + '.npy'
 
         np.save(os.path.join(self.output_folder_path, self.output_mask),
                 binary_mask)
