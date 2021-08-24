@@ -11,7 +11,9 @@ def registration(true_width,
                  centers,
                  kp_template,
                  input_image,
-                 output_dir=None):
+                 output_dir=None,
+                 horizontal_ruler=None,
+                 vertical_ruler=None):
     # Constants
     DEBUG = False
     sift_res = 1024  # resolution at which SIFT operates;  TODO: make consistent with that of main.py
@@ -145,6 +147,17 @@ def registration(true_width,
     deformed_image = cv2.warpPerspective(target, M2,
                                          (ref_coords[1, 0, 0].astype(int) + 1,
                                           ref_coords[2, 0, 1].astype(int) + 1))
+
+    # Add rulers if needed
+    if horizontal_ruler is not None:
+        image_with_ruler = np.zeros((deformed_image.shape[0] + horizontal_ruler.shape[0],
+                                    deformed_image.shape[1] + vertical_ruler.shape[1], 3), dtype='uint8')
+
+        image_with_ruler[0:deformed_image.shape[0], 0:deformed_image.shape[1], :] = cv2.cvtColor(deformed_image, cv2.COLOR_RGB2BGR)
+        image_with_ruler[deformed_image.shape[0]:, 0:-vertical_ruler.shape[1], :] = horizontal_ruler[:, 0:deformed_image.shape[1], :]
+        image_with_ruler[0:deformed_image.shape[0], -vertical_ruler.shape[1]:, :] = vertical_ruler[0:deformed_image.shape[0], :,:]
+
+        deformed_image = image_with_ruler
 
     cv2.imwrite(output_image, deformed_image)
 

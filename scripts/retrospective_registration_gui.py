@@ -60,6 +60,9 @@ class Application(Frame):
         self.canvas1.itemconfigure(1, font=('cambria', 12, 'bold'))
         self.canvas1.itemconfigure(2, font=('cambria', 10))
 
+        self.horizontal_ruler = cv2.imread('./resources/horizontal.png')
+        self.vertical_ruler = cv2.imread('./resources/vertical.png')
+
     def fileUploadWindow(self):
         """Contains code to generate the second window in the application
         """
@@ -309,8 +312,14 @@ class Application(Frame):
             self.img_fullres), M2, (ref_coords[1, 0, 0].astype(int) + 1,
                                     ref_coords[2, 0, 1].astype(int) + 1))
 
-        cv2.imwrite(self.output_image,
-                    cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR))
+        image_with_ruler = np.zeros((self.deformed_image.shape[0] + self.horizontal_ruler.shape[0],
+                                    self.deformed_image.shape[1] + self.vertical_ruler.shape[1], 3), dtype='uint8')
+
+        image_with_ruler[0:self.deformed_image.shape[0], 0:self.deformed_image.shape[1], :] = cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR)
+        image_with_ruler[self.deformed_image.shape[0]:, 0:-self.vertical_ruler.shape[1], :] = self.horizontal_ruler[:, 0:self.deformed_image.shape[1], :]
+        image_with_ruler[0:self.deformed_image.shape[0], -self.vertical_ruler.shape[1]:, :] = self.vertical_ruler[0:self.deformed_image.shape[0], :,:]
+
+        cv2.imwrite(self.output_image, image_with_ruler)
 
     def click(self, event):
         """Replacement mouse handler inside Canvas, draws a blue ball on each click"""
