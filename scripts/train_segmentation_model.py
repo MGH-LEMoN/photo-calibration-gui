@@ -64,7 +64,7 @@ def train_segmentation(input_image_dir=None,
                             None,
                             fx=1.0 / rescaling_factor,
                             fy=1.0 / rescaling_factor,
-                            interpolation=cv2.INTER_NEAREST) > 128
+                            interpolation=cv2.INTER_NEAREST) > 0
 
             # Randomly select pixels for training
             idx = np.where(Mr.flatten())
