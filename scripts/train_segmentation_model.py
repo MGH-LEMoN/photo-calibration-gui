@@ -9,7 +9,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 
-
 def train_segmentation(input_image_dir=None,
                        input_mask_dir=None,
                        output_dir=None):
@@ -19,7 +18,6 @@ def train_segmentation(input_image_dir=None,
 
     # output_dir = os.getcwd() if output_dir is None else output_dir
     output_file = os.path.join(output_dir, 'SVM.npy')
-
 
     try:
         # We don't operate at full resolution, but an image downsampled by this factor
@@ -34,8 +32,8 @@ def train_segmentation(input_image_dir=None,
         verbosity = 1
 
         # Read list of images / masks
-        im_files = sorted(glob.glob(input_image_dir + '/*.*'))
-        mask_files = sorted(glob.glob(input_mask_dir + '/*.*'))
+        im_files = sorted(glob.glob(os.path.join(input_image_dir, '*.*')))
+        mask_files = sorted(glob.glob(os.path.join(input_mask_dir, '*.*')))
         n_im = len(im_files)
 
         # count number of features (to allocate feature matrix)
@@ -90,15 +88,14 @@ def train_segmentation(input_image_dir=None,
             t.append(np.ones_like(idx_pos))
             t.append(np.zeros_like(idx_neg))
 
-
         t = np.concatenate(t)
         F = np.concatenate(F)
 
         # Now we can train the SVM
         print('SVM training')
 
-        clf = make_pipeline(StandardScaler(), SVC(kernel='linear',
-                                                  verbose=verbosity))
+        clf = make_pipeline(StandardScaler(),
+                            SVC(kernel='linear', verbose=verbosity))
         clf.fit(F, t)
 
         print('Done! Saving to disk')
@@ -110,4 +107,3 @@ def train_segmentation(input_image_dir=None,
         return 1
     except Exception as e:
         return 0
-
