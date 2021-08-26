@@ -202,7 +202,7 @@ class Application(Frame):
                 #              self.output_folder_path)
                 registration(true_width, true_height, template, des_template,
                              centers, kp_template, input_image,
-                             self.output_folder_path, self.horizontal_ruler_ruler, self.vertical_ruler)
+                             self.output_folder_path, self.horizontal_ruler, self.vertical_ruler)
             except:
                 print(f'failed on {input_image}')
         pb1.destroy()
