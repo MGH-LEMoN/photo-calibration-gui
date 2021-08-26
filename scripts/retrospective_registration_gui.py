@@ -6,7 +6,34 @@ from tkinter import filedialog, messagebox
 
 import cv2
 import numpy as np
+import screeninfo
 from PIL import Image, ImageTk, UnidentifiedImageError
+
+
+def get_monitor_from_coord(x, y):
+    monitors = screeninfo.get_monitors()
+
+    for m in reversed(monitors):
+        if m.x <= x <= m.width + m.x and m.y <= y <= m.height + m.y:
+            return m
+    return monitors[0]
+
+
+def get_screen_dimensions(root):
+    # Get the screen which contains top
+    current_screen = get_monitor_from_coord(root.winfo_x(), root.winfo_y())
+
+    return current_screen.width, current_screen.height
+
+
+def set_root_position(root, width, height):
+    screen_width, screen_height = get_screen_dimensions(root)
+
+    # Position the canvas at the center of the screen
+    x = (screen_width // 2) - (width // 2)
+    y = (screen_height // 2) - (height // 2)
+
+    root.geometry(f'+{x}+{y}')
 
 
 class Application(Frame):
@@ -33,7 +60,8 @@ class Application(Frame):
             '4. Click on Register buttom and wait until the program loads the next image'
         ]
 
-        canvas_width, canvas_height = 600, 250
+        canvas_width, canvas_height = 600, 200
+        set_root_position(self.master, canvas_width, canvas_height)
 
         self.canvas1 = Canvas(self.master,
                               width=canvas_width,
@@ -55,7 +83,7 @@ class Application(Frame):
                      fg='white',
                      font=('cambria', 9, 'bold'),
                      justify='center')
-        self.canvas1.create_window(int(canvas_width // 2), 225, window=btn)
+        self.canvas1.create_window(int(canvas_width // 2), 175, window=btn)
 
         self.canvas1.itemconfigure(1, font=('cambria', 12, 'bold'))
         self.canvas1.itemconfigure(2, font=('cambria', 10))
@@ -70,7 +98,7 @@ class Application(Frame):
         self.clearFrame(self.canvas1)
 
         # Create canvas for widgets
-        self.canvas2 = Canvas(self.master, width=600, height=205)
+        self.canvas2 = Canvas(self.master, width=600, height=200)
         self.canvas2.pack()
 
         # Specify input images directory
@@ -86,6 +114,12 @@ class Application(Frame):
                                command=self.open_input_folder)
         self.canvas2.create_window(450, 10, anchor=tk.NW, window=input_lbl_btn)
 
+        self.input_lbl_val = Label(
+            self.master,
+            text='-', fg='red',
+            font=('Cambria', 10))
+        self.canvas2.create_window(10, 35, anchor=tk.NW, window=self.input_lbl_val)
+
         # Specify directory to store corrected images
         output_lbl = Label(
             self.master,
@@ -93,36 +127,50 @@ class Application(Frame):
             text=
             'Select the output directory for corrected images \n (must already exist)'
         )
-        self.canvas2.create_window(10, 50, anchor=tk.NW, window=output_lbl)
+        self.canvas2.create_window(10, 60, anchor=tk.NW, window=output_lbl)
 
         output_lbl_btn = Button(self.master,
                                 text='Choose Folder ',
                                 font=('Cambria', 10, 'bold'),
                                 command=self.open_output_folder)
         self.canvas2.create_window(450,
-                                   50,
+                                   60,
                                    anchor=tk.NW,
                                    window=output_lbl_btn)
+
+        self.output_lbl_val = Label(
+            self.master,
+            text='-', fg='red',
+            font=('Cambria', 10))
+        self.canvas2.create_window(10, 90, anchor=tk.NW, window=self.output_lbl_val)
+
+        mode_lbl = Label(
+            self.master,
+            font=('Cambria', 10),
+            text=
+            'Select Mode: '
+        )
+        self.canvas2.create_window(100, 115, anchor=tk.NW, window=mode_lbl)
 
         self.radio_var = IntVar()
         R1 = Radiobutton(self.master,
                          text="4 Points",
                          variable=self.radio_var,
                          value=1)
-        self.canvas2.create_window(225, 100, window=R1)
+        self.canvas2.create_window(225, 115, anchor=tk.NW, window=R1)
 
         R2 = Radiobutton(self.master,
                          text="2 Points",
                          variable=self.radio_var,
                          value=2)
-        self.canvas2.create_window(350, 100, window=R2)
+        self.canvas2.create_window(350, 115, anchor=tk.NW, window=R2)
 
         upld_btn = Button(self.master,
                           text='Register Images',
                           bg='brown',
                           fg='white',
                           command=self.create_mask_section)
-        self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
+        self.canvas2.create_window(300, 160, anchor=tk.CENTER, window=upld_btn)
 
     def create_mask_section(self):
         # Clear canvas for the next screen
@@ -161,10 +209,13 @@ class Application(Frame):
         self.input_images = sorted(
             glob.glob(os.path.join(self.input_folder_path, '*.*')))
 
+        self.input_lbl_val['text'] = self.input_folder_path
+
     def open_output_folder(self):
         """Output directory selection
         """
         self.output_folder_path = filedialog.askdirectory()
+        self.output_lbl_val['text'] = self.output_folder_path
 
     def next_img(self):
         try:
