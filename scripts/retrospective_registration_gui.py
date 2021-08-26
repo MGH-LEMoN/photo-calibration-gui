@@ -307,16 +307,28 @@ class Application(Frame):
             #TODO code for 4 button clicks
             # take only the first 4 points
             self.pos_tuple = self.pos_tuple[:4]
-            pass
+
+            true_width = float(self.e1.get())
+            true_height = float(self.e2.get())
+
         else:
             #TODO code for 2 button clicks
             self.pos_tuple = self.pos_tuple[:2]
-            pass
+
+            # We pretend the user clicked on the 4 corners of the image
+            # and make the true_width and true_height proportional to the provided length
+            pix_dist = np.sqrt((self.pos_tuple[0][0] - self.pos_tuple[1][0]) ** 2 + (self.pos_tuple[0][1] - self.pos_tuple[1][1]) ** 2) / self.scale_down_factor_screen
+            pix_siz = float(self.e1.get()) / pix_dist
+            true_width = pix_siz * self.img_fullres.size[0]
+            true_height = pix_siz * self.img_fullres.size[1]
+            self.pos_tuple = [ [0, 0],
+                               [0, self.img_fullres.size[1] * self.scale_down_factor_screen - 1],
+                               [self.img_fullres.size[0] * self.scale_down_factor_screen - 1, 0],
+                               [self.img_fullres.size[0] * self.scale_down_factor_screen - 1, self.img_fullres.size[1] * self.scale_down_factor_screen - 1]  ]
+
+
 
         reference_pixel_size = 0.1
-
-        true_width = float(self.e1.get())
-        true_height = float(self.e2.get())
 
         centers_target = np.array(
             self.pos_tuple) / self.scale_down_factor_screen
