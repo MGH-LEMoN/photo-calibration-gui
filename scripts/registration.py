@@ -150,12 +150,22 @@ def registration(true_width,
 
     # Add rulers if needed
     if horizontal_ruler is not None:
-        image_with_ruler = np.zeros((deformed_image.shape[0] + horizontal_ruler.shape[0],
-                                    deformed_image.shape[1] + vertical_ruler.shape[1], 3), dtype='uint8')
+        image_with_ruler = np.zeros(
+            (deformed_image.shape[0] + horizontal_ruler.shape[0],
+             deformed_image.shape[1] + vertical_ruler.shape[1], 3),
+            dtype='uint8')
 
-        image_with_ruler[0:deformed_image.shape[0], 0:deformed_image.shape[1], :] = cv2.cvtColor(deformed_image, cv2.COLOR_RGB2BGR)
-        image_with_ruler[deformed_image.shape[0]:, 0:-vertical_ruler.shape[1], :] = horizontal_ruler[:, 0:deformed_image.shape[1], :]
-        image_with_ruler[0:deformed_image.shape[0], -vertical_ruler.shape[1]:, :] = vertical_ruler[0:deformed_image.shape[0], :,:]
+        image_with_ruler[0:deformed_image.shape[0],
+                         0:deformed_image.shape[1], :] = cv2.cvtColor(
+                             deformed_image, cv2.COLOR_RGB2BGR)
+        image_with_ruler[
+            deformed_image.shape[0]:,
+            0:-vertical_ruler.shape[1], :] = horizontal_ruler[:,
+                                                              0:deformed_image.
+                                                              shape[1], :]
+        image_with_ruler[0:deformed_image.shape[0],
+                         -vertical_ruler.shape[1]:, :] = vertical_ruler[
+                             0:deformed_image.shape[0], :, :]
 
         deformed_image = image_with_ruler
 

@@ -3,8 +3,9 @@ import os
 
 import cv2
 import numpy as np
-from functions import compute_gaussian_scaled_space_features
 from sklearn.pipeline import make_pipeline
+
+from functions import compute_gaussian_scaled_space_features
 
 
 def apply_segmentation(input_image_dir=None,
@@ -72,7 +73,8 @@ def apply_segmentation(input_image_dir=None,
             # Write output
             fname = os.path.basename(im_files[i])
             name = os.path.splitext(fname)[0]
-            output_filename = os.path.join(output_mask_dir, name + '.automask.png')
+            output_filename = os.path.join(output_mask_dir,
+                                           name + '.automask.png')
 
             cv2.imwrite(output_filename, np.uint8(Mfull))
         print('All done')
