@@ -207,6 +207,9 @@ class Application(Frame):
 
         w = Label(self.master, text="Width: ", font=('Cambria', 10, 'bold'))
         self.e1 = Entry(self.master, width=10)
+        self.e1.var = tk.DoubleVar()
+        self.e1['textvariable'] = self.e1.var
+        self.e1.var.set(0)
 
         self.canvas3.create_window(canvas_width // 2,
                                    canvas_height - 105,
@@ -219,6 +222,10 @@ class Application(Frame):
 
         h = Label(self.master, text="Height: ", font=('Cambria', 10, 'bold'))
         self.e2 = Entry(self.master, width=10)
+        self.e2.var = tk.DoubleVar()
+        self.e2['textvariable'] = self.e2.var
+        self.e2.var.set(0)
+
         self.canvas3.create_window(canvas_width // 2,
                                    canvas_height - 80,
                                    anchor=tk.NE,
@@ -230,7 +237,9 @@ class Application(Frame):
 
         self.b1 = Button(self.master,
                          text='Register',
-                         command=self.perform_registration,
+                         command=lambda:
+                         [self.perform_registration(),
+                          self.activate_next()],
                          bg='brown',
                          fg='white',
                          font=('cambria', 9, 'bold'))
@@ -242,15 +251,20 @@ class Application(Frame):
         self.b2 = Button(self.master,
                          text='Next',
                          command=self.next_img,
-                         bg='brown',
-                         fg='white',
                          font=('cambria', 9, 'bold'))
+        self.b2.configure(relief=tk.SUNKEN, state=tk.DISABLED)
         self.canvas3.create_window(canvas_width // 2,
                                    canvas_height - 40,
                                    anchor=tk.NW,
                                    window=self.b2)
 
         self.canvas3.bind("<Button-1>", self.click)
+
+    def activate_next(self):
+        self.b2.configure(relief=tk.RAISED,
+                          state=tk.ACTIVE,
+                          bg='brown',
+                          fg='white')
 
     def perform_registration(self):
         """This function performs the registration and close the GUI automatically
@@ -312,12 +326,22 @@ class Application(Frame):
             self.img_fullres), M2, (ref_coords[1, 0, 0].astype(int) + 1,
                                     ref_coords[2, 0, 1].astype(int) + 1))
 
-        image_with_ruler = np.zeros((self.deformed_image.shape[0] + self.horizontal_ruler.shape[0],
-                                    self.deformed_image.shape[1] + self.vertical_ruler.shape[1], 3), dtype='uint8')
+        image_with_ruler = np.zeros(
+            (self.deformed_image.shape[0] + self.horizontal_ruler.shape[0],
+             self.deformed_image.shape[1] + self.vertical_ruler.shape[1], 3),
+            dtype='uint8')
 
-        image_with_ruler[0:self.deformed_image.shape[0], 0:self.deformed_image.shape[1], :] = cv2.cvtColor(self.deformed_image, cv2.COLOR_RGB2BGR)
-        image_with_ruler[self.deformed_image.shape[0]:, 0:-self.vertical_ruler.shape[1], :] = self.horizontal_ruler[:, 0:self.deformed_image.shape[1], :]
-        image_with_ruler[0:self.deformed_image.shape[0], -self.vertical_ruler.shape[1]:, :] = self.vertical_ruler[0:self.deformed_image.shape[0], :,:]
+        image_with_ruler[0:self.deformed_image.shape[0],
+                         0:self.deformed_image.shape[1], :] = cv2.cvtColor(
+                             self.deformed_image, cv2.COLOR_RGB2BGR)
+        image_with_ruler[
+            self.deformed_image.shape[0]:, 0:-self.vertical_ruler.
+            shape[1], :] = self.horizontal_ruler[:, 0:self.deformed_image.
+                                                 shape[1], :]
+        image_with_ruler[
+            0:self.deformed_image.shape[0],
+            -self.vertical_ruler.shape[1]:, :] = self.vertical_ruler[
+                0:self.deformed_image.shape[0], :, :]
 
         cv2.imwrite(self.output_image, image_with_ruler)
 
