@@ -104,13 +104,24 @@ class Application(Frame):
                                    anchor=tk.NW,
                                    window=output_lbl_btn)
 
-        upld_btn = Button(
-            self.master,
-            text='Register Images',
-            bg='brown',
-            fg='white',
-            command=self.create_mask_section,
-        )
+        self.radio_var = IntVar()
+        R1 = Radiobutton(self.master,
+                         text="4 Points",
+                         variable=self.radio_var,
+                         value=1)
+        self.canvas2.create_window(225, 100, window=R1)
+
+        R2 = Radiobutton(self.master,
+                         text="2 Points",
+                         variable=self.radio_var,
+                         value=2)
+        self.canvas2.create_window(350, 100, window=R2)
+
+        upld_btn = Button(self.master,
+                          text='Register Images',
+                          bg='brown',
+                          fg='white',
+                          command=self.create_mask_section)
         self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
 
     def create_mask_section(self):
@@ -205,35 +216,57 @@ class Application(Frame):
         canvas_width = self.canvas3.winfo_width()
         canvas_height = self.canvas3.winfo_height()
 
-        w = Label(self.master, text="Width: ", font=('Cambria', 10, 'bold'))
-        self.e1 = Entry(self.master, width=10)
-        self.e1.var = tk.DoubleVar()
-        self.e1['textvariable'] = self.e1.var
-        self.e1.var.set(0)
+        if self.radio_var.get() == 1:
+            w = Label(self.master,
+                      text="Width: ",
+                      font=('Cambria', 10, 'bold'))
+            self.e1 = Entry(self.master, width=10)
+            self.e1.var = tk.DoubleVar()
+            self.e1['textvariable'] = self.e1.var
+            self.e1.var.set(0)
 
-        self.canvas3.create_window(canvas_width // 2,
-                                   canvas_height - 105,
-                                   anchor=tk.NE,
-                                   window=w)
-        self.canvas3.create_window(canvas_width // 2,
-                                   canvas_height - 105,
-                                   anchor=tk.NW,
-                                   window=self.e1)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 105,
+                                       anchor=tk.NE,
+                                       window=w)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 105,
+                                       anchor=tk.NW,
+                                       window=self.e1)
 
-        h = Label(self.master, text="Height: ", font=('Cambria', 10, 'bold'))
-        self.e2 = Entry(self.master, width=10)
-        self.e2.var = tk.DoubleVar()
-        self.e2['textvariable'] = self.e2.var
-        self.e2.var.set(0)
+            h = Label(self.master,
+                      text="Height: ",
+                      font=('Cambria', 10, 'bold'))
+            self.e2 = Entry(self.master, width=10)
+            self.e2.var = tk.DoubleVar()
+            self.e2['textvariable'] = self.e2.var
+            self.e2.var.set(0)
 
-        self.canvas3.create_window(canvas_width // 2,
-                                   canvas_height - 80,
-                                   anchor=tk.NE,
-                                   window=h)
-        self.canvas3.create_window(canvas_width // 2,
-                                   canvas_height - 80,
-                                   anchor=tk.NW,
-                                   window=self.e2)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 80,
+                                       anchor=tk.NE,
+                                       window=h)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 80,
+                                       anchor=tk.NW,
+                                       window=self.e2)
+        else:
+            w = Label(self.master,
+                      text="Ruler Length: ",
+                      font=('Cambria', 10, 'bold'))
+            self.e1 = Entry(self.master, width=10)
+            self.e1.var = tk.DoubleVar()
+            self.e1['textvariable'] = self.e1.var
+            self.e1.var.set(0)
+
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 105,
+                                       anchor=tk.NE,
+                                       window=w)
+            self.canvas3.create_window(canvas_width // 2,
+                                       canvas_height - 105,
+                                       anchor=tk.NW,
+                                       window=self.e1)
 
         self.b1 = Button(self.master,
                          text='Register',
@@ -269,6 +302,17 @@ class Application(Frame):
     def perform_registration(self):
         """This function performs the registration and close the GUI automatically
         """
+
+        if self.radio_var.get() == 1:
+            #TODO code for 4 button clicks
+            # take only the first 4 points
+            self.pos_tuple = self.pos_tuple[:4]
+            pass
+        else:
+            #TODO code for 2 button clicks
+            self.pos_tuple = self.pos_tuple[:2]
+            pass
+
         reference_pixel_size = 0.1
 
         true_width = float(self.e1.get())
