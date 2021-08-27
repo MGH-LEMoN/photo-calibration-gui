@@ -275,6 +275,13 @@ class Application(Frame):
                     'Key points in template image'), plt.show()
 
     def showimage(self):
+
+        try:
+            #  Clear canvas for the next screen
+            self.clearFrame(self.canvas2)
+        except:
+            pass
+
         # open file upload dialog
         fln = filedialog.askopenfilename(initialdir=os.getcwd(),
                                          title='Select Image File',
@@ -318,6 +325,7 @@ class Application(Frame):
         canvas_width = new_im_width
         canvas_height = new_im_height + 150
 
+        print(canvas_width, canvas_height)
         set_root_position(self.master, canvas_width, canvas_height)
 
         # New canvas
@@ -336,11 +344,11 @@ class Application(Frame):
         self.e1 = Entry(self.master, width=10)
 
         self.canvas2.create_window(canvas_width // 2,
-                                   canvas_height - 125,
+                                   canvas_height - 135,
                                    anchor=tk.NE,
                                    window=w)
         self.canvas2.create_window(canvas_width // 2,
-                                   canvas_height - 125,
+                                   canvas_height - 135,
                                    anchor=tk.NW,
                                    window=self.e1)
 
@@ -350,11 +358,11 @@ class Application(Frame):
         self.e2 = Entry(self.master, width=10)
 
         self.canvas2.create_window(canvas_width // 2,
-                                   canvas_height - 100,
+                                   canvas_height - 110,
                                    anchor=tk.NE,
                                    window=h)
         self.canvas2.create_window(canvas_width // 2,
-                                   canvas_height - 100,
+                                   canvas_height - 110,
                                    anchor=tk.NW,
                                    window=self.e2)
 
@@ -366,9 +374,21 @@ class Application(Frame):
                     font=('cambria', 9, 'bold'))
 
         self.canvas2.create_window(canvas_width // 2,
-                                   canvas_height - 50,
+                                   canvas_height - 70,
                                    anchor=tk.CENTER,
                                    window=b1)
+
+        reload_button = Button(self.master,
+                               text='Reload Image',
+                               command=self.showimage,
+                               bg='brown',
+                               fg='white',
+                               font=('cambria', 9, 'bold'))
+
+        self.canvas2.create_window(canvas_width // 2,
+                                   canvas_height - 40,
+                                   anchor=tk.CENTER,
+                                   window=reload_button)
 
         self.canvas2.bind("<Button-1>", self.click)
 

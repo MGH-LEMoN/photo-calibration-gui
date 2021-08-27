@@ -7,7 +7,6 @@ from tkinter import filedialog, messagebox, ttk
 import cv2
 import numpy as np
 import screeninfo
-
 from registration import registration
 
 
@@ -35,6 +34,7 @@ def set_root_position(root, width, height):
     y = (screen_height // 2) - (height // 2)
 
     root.geometry(f'+{x}+{y}')
+
 
 class Application(Frame):
     def __init__(self, master=None):

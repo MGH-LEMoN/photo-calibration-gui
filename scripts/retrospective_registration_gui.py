@@ -114,11 +114,14 @@ class Application(Frame):
                                command=self.open_input_folder)
         self.canvas2.create_window(450, 10, anchor=tk.NW, window=input_lbl_btn)
 
-        self.input_lbl_val = Label(
-            self.master,
-            text='-', fg='red',
-            font=('Cambria', 10))
-        self.canvas2.create_window(10, 35, anchor=tk.NW, window=self.input_lbl_val)
+        self.input_lbl_val = Label(self.master,
+                                   text='-',
+                                   fg='red',
+                                   font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   35,
+                                   anchor=tk.NW,
+                                   window=self.input_lbl_val)
 
         # Specify directory to store corrected images
         output_lbl = Label(
@@ -138,18 +141,18 @@ class Application(Frame):
                                    anchor=tk.NW,
                                    window=output_lbl_btn)
 
-        self.output_lbl_val = Label(
-            self.master,
-            text='-', fg='red',
-            font=('Cambria', 10))
-        self.canvas2.create_window(10, 90, anchor=tk.NW, window=self.output_lbl_val)
+        self.output_lbl_val = Label(self.master,
+                                    text='-',
+                                    fg='red',
+                                    font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   90,
+                                   anchor=tk.NW,
+                                   window=self.output_lbl_val)
 
-        mode_lbl = Label(
-            self.master,
-            font=('Cambria', 10),
-            text=
-            'Select Mode: '
-        )
+        mode_lbl = Label(self.master,
+                         font=('Cambria', 10),
+                         text='Select Mode: ')
         self.canvas2.create_window(100, 115, anchor=tk.NW, window=mode_lbl)
 
         self.radio_var = IntVar()
@@ -368,16 +371,31 @@ class Application(Frame):
 
             # We pretend the user clicked on the 4 corners of the image
             # and make the true_width and true_height proportional to the provided length
-            pix_dist = np.sqrt((self.pos_tuple[0][0] - self.pos_tuple[1][0]) ** 2 + (self.pos_tuple[0][1] - self.pos_tuple[1][1]) ** 2) / self.scale_down_factor_screen
+            pix_dist = np.sqrt(
+                (self.pos_tuple[0][0] - self.pos_tuple[1][0])**2 +
+                (self.pos_tuple[0][1] -
+                 self.pos_tuple[1][1])**2) / self.scale_down_factor_screen
             pix_siz = float(self.e1.get()) / pix_dist
             true_width = pix_siz * self.img_fullres.size[0]
             true_height = pix_siz * self.img_fullres.size[1]
-            self.pos_tuple = [ [0, 0],
-                               [0, self.img_fullres.size[1] * self.scale_down_factor_screen - 1],
-                               [self.img_fullres.size[0] * self.scale_down_factor_screen - 1, 0],
-                               [self.img_fullres.size[0] * self.scale_down_factor_screen - 1, self.img_fullres.size[1] * self.scale_down_factor_screen - 1]  ]
-
-
+            self.pos_tuple = [
+                [0, 0],
+                [
+                    0,
+                    self.img_fullres.size[1] * self.scale_down_factor_screen -
+                    1
+                ],
+                [
+                    self.img_fullres.size[0] * self.scale_down_factor_screen -
+                    1, 0
+                ],
+                [
+                    self.img_fullres.size[0] * self.scale_down_factor_screen -
+                    1,
+                    self.img_fullres.size[1] * self.scale_down_factor_screen -
+                    1
+                ]
+            ]
 
         reference_pixel_size = 0.1
 
