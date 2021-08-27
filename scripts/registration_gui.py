@@ -95,48 +95,84 @@ class Application(Frame):
         # Clear canvas for the next screen
         self.clearFrame(self.canvas1)
 
-        # Set window size
-        self.master.geometry('700x200')
+        canvas_width, canvas_height = 700, 200
+        set_root_position(self.master, canvas_width, canvas_height)
+
+        # Create canvas for widgets
+        self.canvas2 = Canvas(self.master,
+                              width=canvas_width,
+                              height=canvas_height)
+        self.canvas2.pack()
 
         # Specify calibration file
         npz_lbl = Label(self.master,
                         text='Upload the calibration file (*.npz file)',
                         font=('Cambria', 10))
-        npz_lbl.grid(row=0, column=0, padx=20)
+        self.canvas2.create_window(10, 15, anchor=tk.W, window=npz_lbl)
 
         npz_btn = Button(self.master,
                          text='Choose File',
                          font=('Cambria', 10, 'bold'),
                          command=self.open_npz_file)
-        npz_btn.grid(row=0, column=1, padx=20)
+        self.canvas2.create_window(500, 15, anchor=tk.W, window=npz_btn)
+
+        self.npz_lbl_val = Label(self.master,
+                                 text='-',
+                                 fg='red',
+                                 font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   30,
+                                   anchor=tk.W,
+                                   window=self.npz_lbl_val)
 
         # Specify input images directory
         input_lbl = Label(
             self.master,
             text='Select the input directory for uncorrected images ',
             font=('Cambria', 10))
-        input_lbl.grid(row=1, column=0, padx=20)
+        self.canvas2.create_window(10, 55, anchor=tk.W, window=input_lbl)
 
         input_lbl_btn = Button(self.master,
                                text='Choose Folder ',
                                font=('Cambria', 10, 'bold'),
                                command=self.open_input_folder)
-        input_lbl_btn.grid(row=1, column=1, padx=20)
+        self.canvas2.create_window(500, 55, anchor=tk.W, window=input_lbl_btn)
+
+        self.input_lbl_val = Label(self.master,
+                                   text='-',
+                                   fg='red',
+                                   font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   70,
+                                   anchor=tk.W,
+                                   window=self.input_lbl_val)
 
         # Specify directory to store corrected images
         output_lbl = Label(
             self.master,
             font=('Cambria', 10),
             text=
-            'Select the output directory for corrected images (must already exist)'
+            'Select the output directory for corrected images \n (must already exist)'
         )
-        output_lbl.grid(row=2, column=0, padx=20)
+        self.canvas2.create_window(10, 100, anchor=tk.W, window=output_lbl)
 
         output_lbl_btn = Button(self.master,
                                 text='Choose Folder ',
                                 font=('Cambria', 10, 'bold'),
                                 command=self.open_output_folder)
-        output_lbl_btn.grid(row=2, column=1, padx=20)
+        self.canvas2.create_window(500,
+                                   100,
+                                   anchor=tk.W,
+                                   window=output_lbl_btn)
+
+        self.output_lbl_val = Label(self.master,
+                                    text='-',
+                                    fg='red',
+                                    font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   120,
+                                   anchor=tk.W,
+                                   window=self.output_lbl_val)
 
         upld = Button(
             self.master,
@@ -145,7 +181,7 @@ class Application(Frame):
             fg='white',
             command=self.performRegistration,
         )
-        upld.grid(row=4, columnspan=3, pady=10)
+        self.canvas2.create_window(350, 160, anchor=tk.CENTER, window=upld)
 
     def clearFrame(self, frame):
         """clears the previous frame
@@ -166,16 +202,19 @@ class Application(Frame):
         """
         self.npz_file_path = filedialog.askopenfilename(
             filetypes=[('Image Files', '*.npz')])
+        self.npz_lbl_val['text'] = self.npz_file_path
 
     def open_input_folder(self):
         """Input directory selection
         """
         self.input_folder_path = filedialog.askdirectory()
+        self.input_lbl_val['text'] = self.input_folder_path
 
     def open_output_folder(self):
         """Output directory selection
         """
         self.output_folder_path = filedialog.askdirectory()
+        self.output_lbl_val['text'] = self.output_folder_path
 
     def performRegistration(self):
         """Perform registration and show progress
@@ -225,8 +264,6 @@ class Application(Frame):
             self.master.update_idletasks()
             pb1['value'] += 100 / len(input_images)
             try:
-                # registration(self.npz_file_path, input_image,
-                #              self.output_folder_path)
                 registration(true_width, true_height, template, des_template,
                              centers, kp_template, input_image,
                              self.output_folder_path, self.horizontal_ruler,
