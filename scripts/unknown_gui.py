@@ -255,7 +255,7 @@ class Application(Frame):
 
         input_path, _ = os.path.splitext(self.current_image)
         _, input_name = os.path.split(input_path)
-        self.output_mask = input_name + '_mask' + '.npy'
+        self.output_mask = input_name + '_mask' + '.npz'
 
         np.save(os.path.join(self.output_folder_path, self.output_mask),
                 binary_mask)

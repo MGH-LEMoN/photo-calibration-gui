@@ -272,7 +272,7 @@ class Application(Frame):
 
             plt.figure(), plt.imshow(
                 kp_im_template, aspect='equal'), plt.title(
-                    'Key points in template image'), plt.show()
+                    'Key points in template image'), plt.show(block=False)
 
     def showimage(self):
 
