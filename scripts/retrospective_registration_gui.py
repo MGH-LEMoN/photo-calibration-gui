@@ -248,7 +248,7 @@ class Application(Frame):
         width, height = self.img_fullres.width, self.img_fullres.height
 
         # Resize so if fits on screen
-        screen_res = 256
+        screen_res = 512
         self.scale_down_factor_screen = screen_res / np.min(
             np.array([width, height]))
 
