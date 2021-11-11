@@ -28,9 +28,10 @@ class Application(Frame):
         words = [
             "Welcome to the Unknown GUI", '!!! Instructions !!!',
             '1. Select the directory with input images',
-            '2. Select the directory where you want the output images saved',
-            '3. Select the path to the output file',
-            '4. Click on Apply Segmentation and wait until the program quits automatically'
+            '2. Select the directory with input masks',
+            '3. Select the directory where you want the output masks saved',
+            '4. For each image, select slices in order',
+            '5. When finished processing the images, the program quits automatically'
         ]
 
         canvas_width, canvas_height = 600, 250
@@ -40,8 +41,8 @@ class Application(Frame):
                               height=canvas_height)
 
         word_pos = [(int(canvas_width // 2), 20), (int(canvas_width // 2), 40),
-                    (20, 60), (20, 80), (20, 100), (20, 120)]
-        word_anchor = [tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW]
+                    (20, 60), (20, 80), (20, 100), (20, 120), (20, 140)]
+        word_anchor = [tk.CENTER, tk.CENTER, tk.NW, tk.NW, tk.NW, tk.NW, tk.NW]
 
         object_id = []
         for word, (x, y), anchor in zip(words, word_pos, word_anchor):
@@ -255,7 +256,7 @@ class Application(Frame):
 
         input_path, _ = os.path.splitext(self.current_image)
         _, input_name = os.path.split(input_path)
-        self.output_mask = input_name + '_mask' + '.npz'
+        self.output_mask = input_name + '_mask'
 
         np.save(os.path.join(self.output_folder_path, self.output_mask),
                 binary_mask)
