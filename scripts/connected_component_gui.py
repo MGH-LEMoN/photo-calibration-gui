@@ -23,10 +23,10 @@ class Application(Frame):
 
         # Start Application Window
         self.master = master
-        self.master.title('Unknown GUI')
+        self.master.title('Connected Components GUI')
 
         words = [
-            "Welcome to the Unknown GUI", '!!! Instructions !!!',
+            "Welcome to the Connected Components GUI", '!!! Instructions !!!',
             '1. Select the directory with input images',
             '2. Select the directory with input masks',
             '3. Select the directory where you want the output masks saved',

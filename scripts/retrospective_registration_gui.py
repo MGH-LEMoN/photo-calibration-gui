@@ -57,7 +57,7 @@ class Application(Frame):
             '1. Select the directory where the input images are',
             '2. Select the directory where you want the output images saved',
             '3. Click on 4 corners of a rectangle for every image and provide the dimensions in mm',
-            '4. Click on Register buttom and wait until the program loads the next image'
+            '4. Click on Register button and wait until the program loads the next image'
         ]
 
         canvas_width, canvas_height = 600, 200
