@@ -148,7 +148,7 @@ class Application(Frame):
         self.image = skimage.io.imread(self.current_image)
 
         # Open mask
-        self.mask = skimage.io.imread(self.current_mask, as_gray=True) > 128
+        self.mask = skimage.io.imread(self.current_mask, as_gray=True) > 0
 
         # Create connected components
         self.connected_components = bwlabel(self.mask)
