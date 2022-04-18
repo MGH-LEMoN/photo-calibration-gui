@@ -10,6 +10,7 @@ import skimage
 import skimage.io as io
 from PIL import Image, ImageTk
 from skimage.measure import label as bwlabel
+from utils import set_root_position
 
 
 class Application(Frame):
@@ -35,6 +36,8 @@ class Application(Frame):
         ]
 
         canvas_width, canvas_height = 600, 250
+
+        set_root_position(self.master, canvas_width, canvas_height)
 
         self.canvas1 = Canvas(self.master,
                               width=canvas_width,
@@ -67,55 +70,87 @@ class Application(Frame):
         # Clear canvas for the next screen
         self.clearFrame(self.canvas1)
 
+        canvas_width, canvas_height = 700, 200
+        set_root_position(self.master, canvas_width, canvas_height)
+
         # Create canvas for widgets
-        self.canvas2 = Canvas(self.master, width=600, height=300)
+        self.canvas2 = Canvas(self.master,
+                              width=canvas_width,
+                              height=canvas_height)
         self.canvas2.pack()
 
         # Specify input images directory
         input_lbl = Label(self.master,
                           text='Select the directory with input images',
                           font=('Cambria', 10))
-        self.canvas2.create_window(10, 10, anchor=tk.NW, window=input_lbl)
+        self.canvas2.create_window(10, 15, anchor=tk.W, window=input_lbl)
 
         input_lbl_btn = Button(self.master,
                                text='Choose Folder ',
                                font=('Cambria', 10, 'bold'),
                                command=self.open_input_folder)
-        self.canvas2.create_window(450, 10, anchor=tk.NW, window=input_lbl_btn)
+        self.canvas2.create_window(500, 15, anchor=tk.W, window=input_lbl_btn)
+
+        self.input_lbl_val = Label(self.master,
+                                   text='-',
+                                   fg='red',
+                                   font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   30,
+                                   anchor=tk.W,
+                                   window=self.input_lbl_val)
 
         # Specify directory with masks
         mask_lbl = Label(self.master,
                          font=('Cambria', 10),
                          text='Select the directory with masks')
-        self.canvas2.create_window(10, 50, anchor=tk.NW, window=mask_lbl)
+        self.canvas2.create_window(10, 55, anchor=tk.W, window=mask_lbl)
 
         mask_lbl_btn = Button(self.master,
                               text='Choose Folder ',
                               font=('Cambria', 10, 'bold'),
                               command=self.open_mask_folder)
-        self.canvas2.create_window(450, 50, anchor=tk.NW, window=mask_lbl_btn)
+        self.canvas2.create_window(500, 55, anchor=tk.W, window=mask_lbl_btn)
+
+        self.mask_lbl_val = Label(self.master,
+                                  text='-',
+                                  fg='red',
+                                  font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   70,
+                                   anchor=tk.W,
+                                   window=self.mask_lbl_val)
 
         # Specify directory to store updates masks
         output_lbl = Label(self.master,
                            font=('Cambria', 10),
                            text='Select the directory to store output masks')
-        self.canvas2.create_window(10, 90, anchor=tk.NW, window=output_lbl)
+        self.canvas2.create_window(10, 100, anchor=tk.W, window=output_lbl)
 
         output_lbl_btn = Button(self.master,
                                 text='Choose Folder ',
                                 font=('Cambria', 10, 'bold'),
                                 command=self.open_output_folder)
-        self.canvas2.create_window(450,
-                                   90,
-                                   anchor=tk.NW,
+        self.canvas2.create_window(500,
+                                   100,
+                                   anchor=tk.W,
                                    window=output_lbl_btn)
+
+        self.output_lbl_val = Label(self.master,
+                                    text='-',
+                                    fg='red',
+                                    font=('Cambria', 10))
+        self.canvas2.create_window(10,
+                                   120,
+                                   anchor=tk.W,
+                                   window=self.output_lbl_val)
 
         upld_btn = Button(self.master,
                           text='Click here',
                           bg='brown',
                           fg='white',
                           command=self.create_mask_section)
-        self.canvas2.create_window(300, 150, anchor=tk.CENTER, window=upld_btn)
+        self.canvas2.create_window(350, 160, anchor=tk.CENTER, window=upld_btn)
 
     def create_mask_section(self):
         # Clear canvas for the next screen
@@ -279,6 +314,7 @@ class Application(Frame):
         """File open dialog to save the training segmentation output file
         """
         self.output_folder_path = filedialog.askdirectory()
+        self.output_lbl_val['text'] = self.output_folder_path
 
     def open_input_folder(self):
         """Input directory selection
@@ -286,6 +322,7 @@ class Application(Frame):
         self.input_folder_path = filedialog.askdirectory()
         self.input_images = sorted(
             glob.glob(os.path.join(self.input_folder_path, '*.*')))
+        self.input_lbl_val['text'] = self.input_folder_path
 
     def open_mask_folder(self):
         """Input directory selection
@@ -294,6 +331,7 @@ class Application(Frame):
         # Go over masks
         self.mask_images = sorted(
             glob.glob(os.path.join(self.mask_folder_path, '*.*')))
+        self.mask_lbl_val['text'] = self.mask_folder_path
 
     def get_mouse_posn(self, event):
         self.topx, self.topy = event.x, event.y
@@ -323,11 +361,8 @@ class Application(Frame):
         self.rect_main_data.clear()
         self.rect_list.clear()
 
-        self.topx = 0
-        self.topy = 0
-
-        self.botx = 0
-        self.boty = 0
+        self.topx, self.topy = 0, 0
+        self.botx, self.boty = 0, 0
 
         self.canvas3.create_image(0, 0, anchor='nw', image=self.canvas3.image)
         self.rect_id = self.canvas3.create_rectangle(self.topx,

@@ -62,8 +62,10 @@ def registration(true_width,
 
         plt.figure(), plt.imshow(kp_im_template, aspect='equal'), plt.title(
             'Key points in template image'), plt.show(block=False)
-        plt.figure(), plt.imshow(kp_im_target, aspect='equal'), plt.title(
-            'Key points in target image'), plt.show(block=False)
+        plt.figure(), plt.imshow(
+            kp_im_target,
+            aspect='equal'), plt.title('Key points in target image'), plt.show(
+                block=False)
 
     # Keypoint Matching
     bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)  # Brute force is fine
@@ -90,11 +92,13 @@ def registration(true_width,
             None,
             flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
         plt.figure(), plt.imshow(
-            img, aspect='equal'), plt.title('Matching key points'), plt.show(block=False)
+            img, aspect='equal'), plt.title('Matching key points'), plt.show(
+                block=False)
         img = cv2.polylines(target, [np.int32(centers_target)], True, 55, 3,
                             cv2.LINE_AA)
         plt.figure(), plt.imshow(
-            img, aspect='equal'), plt.title('Detected corners'), plt.show(block=False)
+            img, aspect='equal'), plt.title('Detected corners'), plt.show(
+                block=False)
 
     # Now that we have detected the centers of the corners, we go back to the original coordinates
     centers_target = centers_target / factor
