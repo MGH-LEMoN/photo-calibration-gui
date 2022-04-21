@@ -281,7 +281,7 @@ class Application(Frame):
                                        window=self.e2)
         else:
             w = Label(self.master,
-                      text="Ruler Length: ",
+                      text="Ruler Length (in mm): ",
                       font=('Cambria', 10, 'bold'))
             self.e1 = Entry(self.master, width=10)
             self.e1.var = tk.DoubleVar()
