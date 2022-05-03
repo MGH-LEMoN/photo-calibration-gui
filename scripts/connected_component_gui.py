@@ -183,7 +183,8 @@ class Application(Frame):
         self.image = skimage.io.imread(self.current_image)
 
         # Open mask
-        self.mask = skimage.io.imread(self.current_mask, as_gray=True) > 0
+        self.mask = skimage.io.imread(self.current_mask, as_gray=True)
+        self.mask = self.mask > np.max(self.mask) / 2
 
         # Create connected components
         self.connected_components = bwlabel(self.mask)
