@@ -247,7 +247,7 @@ class Application(Frame):
 
         if self.radio_var.get() == 1:
             w = Label(self.master,
-                      text="Width: ",
+                      text="Width (mm): ",
                       font=('Cambria', 10, 'bold'))
             self.e1 = Entry(self.master, width=10)
             self.e1.var = tk.DoubleVar()
@@ -264,7 +264,7 @@ class Application(Frame):
                                        window=self.e1)
 
             h = Label(self.master,
-                      text="Height: ",
+                      text="Height (mm): ",
                       font=('Cambria', 10, 'bold'))
             self.e2 = Entry(self.master, width=10)
             self.e2.var = tk.DoubleVar()
