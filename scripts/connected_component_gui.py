@@ -13,7 +13,6 @@ from utils import set_root_position
 
 
 class Application(Frame):
-
     def __init__(self, master=None):
         Frame.__init__(self, master)
 
@@ -34,9 +33,9 @@ class Application(Frame):
         canvas_width, canvas_height = 600, 250
         set_root_position(self.master, canvas_width, canvas_height)
 
-        self.canvas1 = Canvas(self.master,
-                              width=canvas_width,
-                              height=canvas_height)
+        self.canvas1 = Canvas(
+            self.master, width=canvas_width, height=canvas_height
+        )
 
         word_pos = [
             (int(canvas_width // 2), 20),
@@ -77,9 +76,9 @@ class Application(Frame):
         set_root_position(self.master, canvas_width, canvas_height)
 
         # Create canvas for widgets
-        self.canvas2 = Canvas(self.master,
-                              width=canvas_width,
-                              height=canvas_height)
+        self.canvas2 = Canvas(
+            self.master, width=canvas_width, height=canvas_height
+        )
         self.canvas2.pack()
 
         # Specify input images directory
@@ -98,19 +97,19 @@ class Application(Frame):
         )
         self.canvas2.create_window(500, 15, anchor=tk.W, window=input_lbl_btn)
 
-        self.input_lbl_val = Label(self.master,
-                                   text="-",
-                                   fg="red",
-                                   font=("Cambria", 10))
-        self.canvas2.create_window(10,
-                                   30,
-                                   anchor=tk.W,
-                                   window=self.input_lbl_val)
+        self.input_lbl_val = Label(
+            self.master, text="-", fg="red", font=("Cambria", 10)
+        )
+        self.canvas2.create_window(
+            10, 30, anchor=tk.W, window=self.input_lbl_val
+        )
 
         # Specify directory with masks
-        mask_lbl = Label(self.master,
-                         font=("Cambria", 10),
-                         text="Select the directory with masks")
+        mask_lbl = Label(
+            self.master,
+            font=("Cambria", 10),
+            text="Select the directory with masks",
+        )
         self.canvas2.create_window(10, 55, anchor=tk.W, window=mask_lbl)
 
         mask_lbl_btn = Button(
@@ -121,14 +120,12 @@ class Application(Frame):
         )
         self.canvas2.create_window(500, 55, anchor=tk.W, window=mask_lbl_btn)
 
-        self.mask_lbl_val = Label(self.master,
-                                  text="-",
-                                  fg="red",
-                                  font=("Cambria", 10))
-        self.canvas2.create_window(10,
-                                   70,
-                                   anchor=tk.W,
-                                   window=self.mask_lbl_val)
+        self.mask_lbl_val = Label(
+            self.master, text="-", fg="red", font=("Cambria", 10)
+        )
+        self.canvas2.create_window(
+            10, 70, anchor=tk.W, window=self.mask_lbl_val
+        )
 
         # Specify directory to store updated masks
         output_lbl = Label(
@@ -144,19 +141,14 @@ class Application(Frame):
             font=("Cambria", 10, "bold"),
             command=self.select_output_folder,
         )
-        self.canvas2.create_window(500,
-                                   100,
-                                   anchor=tk.W,
-                                   window=output_lbl_btn)
+        self.canvas2.create_window(500, 100, anchor=tk.W, window=output_lbl_btn)
 
-        self.output_lbl_val = Label(self.master,
-                                    text="-",
-                                    fg="red",
-                                    font=("Cambria", 10))
-        self.canvas2.create_window(10,
-                                   120,
-                                   anchor=tk.W,
-                                   window=self.output_lbl_val)
+        self.output_lbl_val = Label(
+            self.master, text="-", fg="red", font=("Cambria", 10)
+        )
+        self.canvas2.create_window(
+            10, 120, anchor=tk.W, window=self.output_lbl_val
+        )
 
         upld_btn = Button(
             self.master,
@@ -200,7 +192,7 @@ class Application(Frame):
 
         # Open mask
         self.mask = imread(self.current_mask, as_gray=True)
-        self.mask = self.mask > np.max(self.max) / 2
+        self.mask = self.mask > np.max(self.mask) / 2
 
         # Create connected components
         self.connected_components = bwlabel(self.mask)
@@ -217,13 +209,15 @@ class Application(Frame):
         # Resize so it fits on screen
         screen_res = 512
         self.scale_down_factor_screen = screen_res / np.min(
-            np.array([im_width, im_height]))
+            np.array([im_width, im_height])
+        )
 
         new_im_width = int(im_width * self.scale_down_factor_screen)
         new_im_height = int(im_height * self.scale_down_factor_screen)
 
-        img_screen = self.img_fullres.resize((new_im_width, new_im_height),
-                                             Image.ANTIALIAS)
+        img_screen = self.img_fullres.resize(
+            (new_im_width, new_im_height), Image.ANTIALIAS
+        )
         img_screen = ImageTk.PhotoImage(img_screen)
 
         self.canvas3.config(width=new_im_width, height=new_im_height + 150)
@@ -250,10 +244,9 @@ class Application(Frame):
             fg="white",
             font=("cambria", 9, "bold"),
         )
-        self.canvas3.create_window(canvas_width // 2,
-                                   canvas_height - 50,
-                                   anchor=tk.NE,
-                                   window=self.b1)
+        self.canvas3.create_window(
+            canvas_width // 2, canvas_height - 50, anchor=tk.NE, window=self.b1
+        )
 
         self.b2 = Button(
             self.master,
@@ -263,10 +256,9 @@ class Application(Frame):
             fg="white",
             font=("cambria", 9, "bold"),
         )
-        self.canvas3.create_window(canvas_width // 2,
-                                   canvas_height - 50,
-                                   anchor=tk.NW,
-                                   window=self.b2)
+        self.canvas3.create_window(
+            canvas_width // 2, canvas_height - 50, anchor=tk.NW, window=self.b2
+        )
 
         self.rect_id = self.canvas3.create_rectangle(
             self.topx,
@@ -287,9 +279,10 @@ class Application(Frame):
 
     def create_mask(self):
         for idx, rect_coords in enumerate(self.rect_list):
-            self.rect_list[idx] = np.array(np.array(rect_coords) //
-                                           self.scale_down_factor_screen,
-                                           dtype="int")
+            self.rect_list[idx] = np.array(
+                np.array(rect_coords) // self.scale_down_factor_screen,
+                dtype="int",
+            )
 
         binary_mask = np.zeros(self.image.shape[0:2])
         for idx, rectangle in enumerate(self.rect_list, 1):
@@ -313,8 +306,7 @@ class Application(Frame):
         _, input_name = os.path.split(input_path)
         self.output_mask = input_name + "_mask"
 
-        np.save(os.path.join(self.output_folder, self.output_mask),
-                binary_mask)
+        np.save(os.path.join(self.output_folder, self.output_mask), binary_mask)
 
     def clearFrame(self, frame):
         """clears the previous frame
@@ -336,7 +328,8 @@ class Application(Frame):
         self.input_lbl_val["text"] = self.input_folder
 
         self.input_images = sorted(
-            glob.glob(os.path.join(self.input_folder, "*.*")))
+            glob.glob(os.path.join(self.input_folder, "*.*"))
+        )
 
     def select_mask_folder(self):
         """Mask directory selection"""
@@ -344,7 +337,8 @@ class Application(Frame):
         self.mask_lbl_val["text"] = self.mask_folder
 
         self.mask_images = sorted(
-            glob.glob(os.path.join(self.mask_folder, "*.*")))
+            glob.glob(os.path.join(self.mask_folder, "*.*"))
+        )
 
     def select_output_folder(self):
         """Output directory selection to save the masks"""
@@ -356,16 +350,14 @@ class Application(Frame):
 
     def update_sel_rect(self, event):
         self.botx, self.boty = event.x, event.y
-        self.canvas3.coords(self.rect_id, self.topx, self.topy, self.botx,
-                            self.boty)  # Update selection rect.
+        self.canvas3.coords(
+            self.rect_id, self.topx, self.topy, self.botx, self.boty
+        )  # Update selection rect.
 
     def draw_rect(self, event):
-        draw_data = self.canvas3.create_rectangle(self.topx,
-                                                  self.topy,
-                                                  self.botx,
-                                                  self.boty,
-                                                  outline="green",
-                                                  fill="")
+        draw_data = self.canvas3.create_rectangle(
+            self.topx, self.topy, self.botx, self.boty, outline="green", fill=""
+        )
         self.rect_list.append((self.topx, self.topy, self.botx, self.boty))
         self.rect_main_data.append(draw_data)
 
