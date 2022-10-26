@@ -40,14 +40,7 @@ def perform_registration(args):
     # Read the image
     args.img_fullres = Image.open(args.in_img)
 
-    # get width and height of image
-    width, height = args.img_fullres.width, args.img_fullres.height
-
-    # Resize so it fits on screen
-    screen_res = 512
-    args.scale_down_factor_screen = screen_res / np.min(
-        np.array([width, height])
-    )
+    args.scale_down_factor_screen = 1
 
     if len(args.pos_tuple) == 4:
         true_width, true_height = args.e1, args.e2
@@ -182,7 +175,7 @@ if __name__ == "__main__":
             "--in_img",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/photos/2604.01.JPG",
             "--points",
-            "1, 2; 3, 4; 5, 6; 7, 8",
+            "431, 621; 481, 621",
             "--width",
             "10",
             "--height",
@@ -198,6 +191,6 @@ if __name__ == "__main__":
     # example call:
     # fspython func_registration.py \
     #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/photos/2604.01.JPG \
-    #   --points 1, 2; 3, 4; 5, 6; 7, 8 \
+    #   --points 431, 621; 481, 621 \
     #   --width 10 --height 15 \
     #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/masked/
