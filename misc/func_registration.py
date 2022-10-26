@@ -1,8 +1,12 @@
-import numpy as np
-import cv2
-from argparse import ArgumentParser, ArgumentTypeError
+import os
 import re
 import sys
+from argparse import ArgumentParser, ArgumentTypeError
+
+import cv2
+import numpy as np
+from PIL import Image
+
 
 # additional type
 def coords(s):
@@ -21,12 +25,32 @@ def coords(s):
 def perform_registration(args):
     """This function performs the registration and close the GUI automatically"""
 
-    # screen_width, screen_height = args.screen_width, args.screen_height
-    args.scale_down_factor_screen = None
+    args.horizontal_ruler = cv2.imread("./resources/horizontal.png")
+    args.vertical_ruler = cv2.imread("./resources/vertical.png")
+
+    # read the image
+    input_path, input_ext = os.path.splitext(args.in_img)
+    _, input_name = os.path.split(input_path)
+
+    # set the output path
+    args.out_img = os.path.join(
+        args.out_dir, input_name + "_deformed" + input_ext
+    )
+
+    # Read the image
+    args.img_fullres = Image.open(args.in_img)
+
+    # get width and height of image
+    width, height = args.img_fullres.width, args.img_fullres.height
+
+    # Resize so it fits on screen
+    screen_res = 512
+    args.scale_down_factor_screen = screen_res / np.min(
+        np.array([width, height])
+    )
 
     if len(args.pos_tuple) == 4:
-        true_width = args.e1
-        true_height = args.e2
+        true_width, true_height = args.e1, args.e2
     elif len(args.pos_tuple) == 2:
         # We pretend the user clicked on the 4 corners of the image
         # and make the true_width and true_height proportional to the provided length
@@ -38,15 +62,17 @@ def perform_registration(args):
             / args.scale_down_factor_screen
         )
         pix_siz = float(args.e1) / pix_dist
-        true_width = pix_siz * args.img_fullres[0]
-        true_height = pix_siz * args.img_fullres[1]
+
+        true_width = pix_siz * args.img_fullres.size[0]
+        true_height = pix_siz * args.img_fullres.size[1]
+
         args.pos_tuple = [
             [0, 0],
-            [0, args.img_fullres[1] * args.scale_down_factor_screen - 1],
-            [args.img_fullres[0] * args.scale_down_factor_screen - 1, 0],
+            [0, args.img_fullres.size[1] * args.scale_down_factor_screen - 1],
+            [args.img_fullres.size[0] * args.scale_down_factor_screen - 1, 0],
             [
-                args.img_fullres[0] * args.scale_down_factor_screen - 1,
-                args.img_fullres[1] * args.scale_down_factor_screen - 1,
+                args.img_fullres.size[0] * args.scale_down_factor_screen - 1,
+                args.img_fullres.size[1] * args.scale_down_factor_screen - 1,
             ],
         ]
     else:
@@ -129,12 +155,13 @@ def perform_registration(args):
         0 : args.deformed_image.shape[0], -args.vertical_ruler.shape[1] :, :
     ] = args.vertical_ruler[0 : args.deformed_image.shape[0], :, :]
 
-    cv2.imwrite(args.output_image, image_with_ruler)
+    cv2.imwrite(args.out_img, image_with_ruler)
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
 
+    parser.add_argument("--in_img", type=str, dest="in_img", default=None)
     parser.add_argument(
         "--points", help="Coordinate", dest="pos_tuple", type=coords, nargs="?"
     )
@@ -144,12 +171,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--height", nargs="?", type=float, dest="e2", default=None
     )
-    parser.add_argument(
-        "--img_fullres", type=coords, dest="img_fullres", default=None
-    )
-    parser.add_argument(
-        "--img_displayres", type=coords, dest="img_displayres", default=None
-    )
+    parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)
@@ -157,14 +179,16 @@ if __name__ == "__main__":
     if gettrace():
         sys.argv = [
             "func_registration.py",
+            "--in_img",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/photos/2604.01.JPG",
             "--points",
             "1, 2; 3, 4; 5, 6; 7, 8",
             "--width",
             "10",
             "--height",
             "15",
-            "--img_fullres",
-            "100,100",
+            "--out_dir",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/masked/",
         ]
 
     args = parser.parse_args()
@@ -172,4 +196,8 @@ if __name__ == "__main__":
     perform_registration(args)
 
     # example call:
-    # fsython func_registration.py --points 1, 2; 3, 4; 5, 6; 7, 8 --width 10 --height 15 --img_fullres 100, 100
+    # fspython func_registration.py \
+    #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/photos/2604.01.JPG \
+    #   --points 1, 2; 3, 4; 5, 6; 7, 8 \
+    #   --width 10 --height 15 \
+    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/masked/
