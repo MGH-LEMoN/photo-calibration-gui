@@ -18,7 +18,7 @@ class SplitArgs(argparse.Action):
             yield lst[i : i + n]
 
     def split(self, s):
-        s = list(map(float, s.split()))
+        s = list(map(float, s))
         coords = list(self.chunks(s, 2))
         if len(coords[-1]) != 2:
             print("Invalid coordinates")
@@ -37,7 +37,9 @@ def perform_registration(args):
     _, input_name = os.path.split(input_path)
 
     # set the output path
-    args.out_img = os.path.join(args.out_dir, input_name + "_deformed" + input_ext)
+    args.out_img = os.path.join(
+        args.out_dir, input_name + "_deformed" + input_ext
+    )
 
     # Read the image
     args.img_fullres = Image.open(args.in_img)
@@ -158,10 +160,14 @@ if __name__ == "__main__":
 
     parser.add_argument("--in_img", type=str, dest="in_img", default=None)
     parser.add_argument(
-        "--points", help="Coordinate", dest="pos_tuple", action=SplitArgs
+        "--points", nargs="+", dest="pos_tuple", action=SplitArgs
     )
-    parser.add_argument("--width", nargs="?", type=float, dest="e1", default=None)
-    parser.add_argument("--height", nargs="?", type=float, dest="e2", default=None)
+    parser.add_argument(
+        "--width", nargs="?", type=float, dest="e1", default=None
+    )
+    parser.add_argument(
+        "--height", nargs="?", type=float, dest="e2", default=None
+    )
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode
@@ -171,7 +177,7 @@ if __name__ == "__main__":
         sys.argv = [
             "func_registration.py",
             "--in_img",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/photos/2604.01.JPG",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG",
             "--points",
             "431 621 481 621",
             "--width",
@@ -179,7 +185,7 @@ if __name__ == "__main__":
             "--height",
             "15",
             "--out_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/masked/",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/",
         ]
 
     args = parser.parse_args()
@@ -188,7 +194,7 @@ if __name__ == "__main__":
 
     # example call:
     # fspython func_registration.py \
-    #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/photos/2604.01.JPG \
+    #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG \
     #   --points 431 621 481 621 \
     #   --width 10 --height 15 \
-    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/rw/masked/
+    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/
