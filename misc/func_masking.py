@@ -1,6 +1,5 @@
 import argparse
 import os
-import re
 import sys
 from argparse import ArgumentParser
 
@@ -50,7 +49,7 @@ def create_mask(args):
 
     args.scale_down_factor_screen = 1
 
-    for idx, rect_coords in enumerate(args.rect_list, 1):
+    for idx, rect_coords in enumerate(args.rect_list):
         args.rect_list[idx] = np.array(
             np.array(rect_coords) // args.scale_down_factor_screen,
             dtype="int",
@@ -66,7 +65,8 @@ def create_mask(args):
     # Create connected components
     connected_components = bwlabel(mask)
 
-    binary_mask = np.zeros(image.shape)
+    binary_mask = np.zeros(image.shape[0:2], dtype="uint8")
+
     for idx, rectangle in enumerate(args.rect_list, 1):
         # Find all unique indices of label image inside rectangle (> 0)
         x1, y1, x2, y2 = rectangle
@@ -100,15 +100,9 @@ if __name__ == "__main__":
         dest="rect_list",
         action=SplitArgs,
     )
-    parser.add_argument(
-        "--in_img", type=file_path, dest="current_image", default=None
-    )
-    parser.add_argument(
-        "--in_mask", type=file_path, dest="current_mask", default=None
-    )
-    parser.add_argument(
-        "--out_dir", type=dir_path, dest="out_dir", default=None
-    )
+    parser.add_argument("--in_img", type=file_path, dest="current_image", default=None)
+    parser.add_argument("--in_mask", type=file_path, dest="current_mask", default=None)
+    parser.add_argument("--out_dir", type=dir_path, dest="out_dir", default=None)
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)
@@ -117,7 +111,7 @@ if __name__ == "__main__":
         sys.argv = [
             "func_masking.py",
             "--rectangle_coordinates",
-            "1 2 3 4 5 6 7 8",
+            "431 559 477 602 1131 565 1180 628 1788 572 1841 641",
             "--in_img",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/2604.01_deformed.JPG",
             "--in_mask",
@@ -131,8 +125,8 @@ if __name__ == "__main__":
     create_mask(args)
 
     # example call:
-    # fspython func_masking.py \
-    # --rectangle_list 1 2 3 4 5 6 7 8 \
+    # fspython misc/func_masking.py \
+    # --rectangle_coordinates 431 559 477 602 1131 565 1180 628 1788 572 1841 641 \
     # --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/2604.01_deformed.JPG \
     # --in_mask /space/calico/1/users/Harsha/photo-calibration-gui/misc/masked/2604.01_deformed_masked.png \
     # --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/connected_components
