@@ -9,8 +9,9 @@ import numpy as np
 from registration import registration
 
 
-def prospective_correction(args):
-    """Perform registration and show progress"""
+def fiducials_correction(args):
+    """Perform correction of photos with fiducials"""
+
     npz_file_path = args.npz_file
     input_folder_path = args.in_dir
     output_folder_path = args.out_dir
@@ -76,9 +77,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--in_dir", type=str, dest="in_dir", default=None)
-    parser.add_argument(
-        "--calibration_file", type=str, dest="npz_file", default=None
-    )
+    parser.add_argument("--calibration_file", type=str, dest="npz_file", default=None)
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode
@@ -86,21 +85,21 @@ if __name__ == "__main__":
 
     if gettrace():
         sys.argv = [
-            "func_retrospective_correction.py",
+            "func_fiducials_correction.py",
             "--in_img",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/prospective_correction_input/",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_input/",
             "--calibration_file",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/calibration.npz",
             "--out_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/prospective_correction_output/",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_output/",
         ]
 
     args = parser.parse_args()
 
-    prospective_correction(args)
+    fiducials_correction(args)
 
     # example call:
-    # fspython func_prospective_correction.py \
-    #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/prospective_correction_input/ \
+    # fspython func_fiducials_correction.py \
+    #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_input/ \
     #   --calibration_file /space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_output/output_npz \
-    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/
+    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_output/

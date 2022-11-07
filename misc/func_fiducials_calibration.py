@@ -12,14 +12,14 @@ class SplitArgs(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, self.split(values))
 
-    def chunks(self, lst, n):
+    def chunks(self, lst, chunk_size):
         """Yield successive n-sized chunks from lst."""
-        for i in range(0, len(lst), n):
-            yield lst[i : i + n]
+        for i in range(0, len(lst), chunk_size):
+            yield lst[i : i + chunk_size]
 
-    def split(self, s):
-        s = list(map(float, s[0].split()))
-        coords = list(self.chunks(s, 2))
+    def split(self, input_string):
+        input_string = list(map(float, input_string))
+        coords = list(self.chunks(input_string, 2))
         if len(coords[-1]) != 2:
             print("Invalid coordinates")
             sys.exit()
@@ -82,7 +82,7 @@ def calculate_centers_and_radii(mouse_clicks):
     return centers, radii
 
 
-def prospective_calibration(args):
+def fiducials_calibration(args):
     """This function performs the calibration/registration and close the GUI automatically"""
     true_w, true_h = args.e1, args.e2
 
@@ -182,7 +182,7 @@ def prospective_calibration(args):
 
         plt.figure()
         plt.imshow(kp_im_template, aspect="equal")
-        plt.title("Key points in template image"),
+        plt.title("Key points in template image")
         plt.savefig(os.path.join(args.out_dir, "keypoints.png"))
 
 
@@ -190,25 +190,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--in_img", type=str, dest="in_img", default=None)
-    parser.add_argument(
-        "--points", nargs="+", dest="pos_tuple", action=SplitArgs
-    )
-    parser.add_argument(
-        "--width", nargs="?", type=float, dest="e1", default=None
-    )
-    parser.add_argument(
-        "--height", nargs="?", type=float, dest="e2", default=None
-    )
+    parser.add_argument("--points", nargs="+", dest="pos_tuple", action=SplitArgs)
+    parser.add_argument("--width", nargs="?", type=float, dest="e1", default=None)
+    parser.add_argument("--height", nargs="?", type=float, dest="e2", default=None)
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)
 
     if gettrace():
+        PROJ_DIR = "/space/calico/1/users/Harsha/photo-calibration-gui"
         sys.argv = [
-            "func_prospective_calibration.py",
+            "func_fiducials_calibration.py",
             "--in_img",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_input/prospective_without_tissue.jpg",
+            f"{PROJ_DIR}/misc/cal_input/prospective_without_tissue.jpg",
             "--points",
             "22 17 40 9 478 25 492 9 18 465 30 451 462 472 478 460",
             "--width",
@@ -216,16 +211,16 @@ if __name__ == "__main__":
             "--height",
             "272",
             "--out_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_output",
+            f"{PROJ_DIR}/misc/cal_output",
         ]
 
     args = parser.parse_args()
 
-    prospective_calibration(args)
+    fiducials_calibration(args)
 
     # example call:
-    # fspython func_prospective_calibration.py \
+    # fspython func_fiducials_calibration.py \
     #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG \
     #   --points 22 17 40 9 478 25 492 9 18 465 30 451 462 472 478 460 \
     #   --width 272 --height 272 \
-    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/
+    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_output/

@@ -26,8 +26,11 @@ class SplitArgs(argparse.Action):
         return coords
 
 
-def perform_registration(args):
+def retrospective_correction(args):
     """This function performs the registration and close the GUI automatically"""
+
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir, exist_ok=True)
 
     args.horizontal_ruler = cv2.imread("./resources/horizontal.png")
     args.vertical_ruler = cv2.imread("./resources/vertical.png")
@@ -190,7 +193,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    perform_registration(args)
+    retrospective_correction(args)
 
     # example call:
     # fspython func_retrospective_correction.py \
