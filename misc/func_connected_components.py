@@ -100,16 +100,22 @@ if __name__ == "__main__":
         dest="rect_list",
         action=SplitArgs,
     )
-    parser.add_argument("--in_img", type=file_path, dest="current_image", default=None)
-    parser.add_argument("--in_mask", type=file_path, dest="current_mask", default=None)
-    parser.add_argument("--out_dir", type=dir_path, dest="out_dir", default=None)
+    parser.add_argument(
+        "--in_img", type=file_path, dest="current_image", default=None
+    )
+    parser.add_argument(
+        "--in_mask", type=file_path, dest="current_mask", default=None
+    )
+    parser.add_argument(
+        "--out_dir", type=dir_path, dest="out_dir", default=None
+    )
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)
 
     if gettrace():
         sys.argv = [
-            "func_masking.py",
+            "func_connected_components.py",
             "--rectangle_coordinates",
             "431 559 477 602 1131 565 1180 628 1788 572 1841 641",
             "--in_img",
@@ -125,7 +131,7 @@ if __name__ == "__main__":
     create_mask(args)
 
     # example call:
-    # fspython misc/func_masking.py \
+    # fspython misc/func_connected_components.py \
     # --rectangle_coordinates 431 559 477 602 1131 565 1180 628 1788 572 1841 641 \
     # --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/2604.01_deformed.JPG \
     # --in_mask /space/calico/1/users/Harsha/photo-calibration-gui/misc/masked/2604.01_deformed_masked.png \
