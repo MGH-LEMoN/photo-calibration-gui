@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     if gettrace():
         sys.argv = [
-            "func_registration.py",
+            "func_retrospective_correction.py",
             "--in_img",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG",
             "--points",
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     perform_registration(args)
 
     # example call:
-    # fspython func_registration.py \
+    # fspython func_retrospective_correction.py \
     #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG \
     #   --points 431 621 481 621 \
     #   --width 10 --height 15 \
