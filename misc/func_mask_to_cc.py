@@ -1,3 +1,4 @@
+"""Helper function to convert binary mask to connected components."""
 import glob
 import os
 import sys
@@ -9,8 +10,7 @@ from skimage.measure import label as bwlabel
 
 
 def mask_to_cc(args):
-    """Label connected components in 2-D binary image"""
-
+    """Label connected components in 2-D binary image."""
     if not os.path.isdir(args.in_dir):
         print("Input directory does not exist")
         sys.exit()
@@ -27,7 +27,8 @@ def mask_to_cc(args):
         # Open mask
         try:
             mask = imread(current_mask, as_gray=True)
-        except:
+        except Exception:
+            print(f"Could not open mask: {current_mask}")
             continue
 
         mask = mask > np.max(mask) / 2
@@ -59,11 +60,11 @@ if __name__ == "__main__":
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/cc_temp/",
         ]
 
-    args = parser.parse_args()
+    parsed_args = parser.parse_args()
 
-    mask_to_cc(args)
+    mask_to_cc(parsed_args)
 
-    # example call:
+    # Example:
     # fspython func_mask_to_cc.py \
     #   --in_dir  "/space/calico/1/users/Harsha/photo-calibration-gui/misc/masked" \
     #   --out_dir  "/space/calico/1/users/Harsha/photo-calibration-gui/misc/cc_temp"

@@ -40,9 +40,7 @@ def retrospective_correction(args):
     _, input_name = os.path.split(input_path)
 
     # set the output path
-    args.out_img = os.path.join(
-        args.out_dir, input_name + "_deformed" + input_ext
-    )
+    args.out_img = os.path.join(args.out_dir, input_name + "_deformed" + input_ext)
 
     # Read the image
     args.img_fullres = Image.open(args.in_img)
@@ -162,15 +160,9 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument("--in_img", type=str, dest="in_img", default=None)
-    parser.add_argument(
-        "--points", nargs="+", dest="pos_tuple", action=SplitArgs
-    )
-    parser.add_argument(
-        "--width", nargs="?", type=float, dest="e1", default=None
-    )
-    parser.add_argument(
-        "--height", nargs="?", type=float, dest="e2", default=None
-    )
+    parser.add_argument("--points", nargs="+", dest="pos_tuple", action=SplitArgs)
+    parser.add_argument("--width", nargs="?", type=float, dest="e1", default=None)
+    parser.add_argument("--height", nargs="?", type=float, dest="e2", default=None)
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode

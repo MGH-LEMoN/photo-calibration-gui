@@ -39,19 +39,13 @@ def file_path(string):
 
 
 def dir_path(string):
-    if os.path.isdir(string):
-        return string
-    else:
-        raise NotADirectoryError(string)
+    return string if os.path.isdir(string) else NotADirectoryError(string)
 
 
 def create_mask(args):
-
-    args.scale_down_factor_screen = 1
-
     for idx, rect_coords in enumerate(args.rect_list):
         args.rect_list[idx] = np.array(
-            np.array(rect_coords) // args.scale_down_factor_screen,
+            np.array(rect_coords),
             dtype="int",
         )
 

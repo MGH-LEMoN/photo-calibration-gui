@@ -18,7 +18,7 @@ class SplitArgs(argparse.Action):
             yield lst[i : i + chunk_size]
 
     def split(self, input_string):
-        input_string = list(map(float, input_string))
+        input_string = list(map(float, input_string[0].split()))
         coords = list(self.chunks(input_string, 2))
         if len(coords[-1]) != 2:
             print("Invalid coordinates")
@@ -97,26 +97,19 @@ def fiducials_calibration(args):
     print(f"Image Width: {width}, Height: {height}")
 
     sift_res = 1024
-    screen_res = 512
 
     scale_down_factor_sift = sift_res / np.min(np.array([width, height]))
-    scale_down_factor_screen = screen_res / np.min(np.array([width, height]))
 
-    # resize image to fit on screen
+    # resize image to compute SIFT features
     new_im_width = int(width * scale_down_factor_sift)
     new_im_height = int(height * scale_down_factor_sift)
 
     img_sift = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
 
-    # resize image to fit on screen
-    new_im_width = int(width * scale_down_factor_screen)
-    new_im_height = int(height * scale_down_factor_screen)
-    img = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
-
     centers = centers * scale_down_factor_sift
     radii = (
         radii * scale_down_factor_sift * 0.9
-    )  # we don't want to detect keypoints on the circle
+    )  # 0.9 because we don't want to detect keypoints on the circle
     sift = cv2.SIFT_create()
     template = np.array(img_sift.convert("LA"))[:, :, 0]
     kp_template, des_template = sift.detectAndCompute(template, None)
@@ -155,6 +148,7 @@ def fiducials_calibration(args):
         true_w=true_w,
         true_h=true_h,
         centers=centers,
+        sift_res=sift_res,
     )
 
     if False:  # TODO:  if DEBUG or something like that?
@@ -184,6 +178,7 @@ def fiducials_calibration(args):
         plt.imshow(kp_im_template, aspect="equal")
         plt.title("Key points in template image")
         plt.savefig(os.path.join(args.out_dir, "keypoints.png"))
+        plt.show()
 
 
 if __name__ == "__main__":
