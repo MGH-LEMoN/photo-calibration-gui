@@ -22,7 +22,7 @@ def fiducials_correction(args):
         raise Exception("Warning", "Input Directory Cannot be Empty")
 
     if not os.path.isdir(output_folder_path):
-        raise Exception("Warning", "Output Directory Cannot be Empty")
+        os.makedirs(output_folder_path, exist_ok=True)
 
     # Read data from model file
     variables = np.load(npz_file_path, allow_pickle=True)
@@ -76,7 +76,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--in_dir", type=str, dest="in_dir", default=None)
-    parser.add_argument("--calibration_file", type=str, dest="npz_file", default=None)
+    parser.add_argument(
+        "--calibration_file", type=str, dest="npz_file", default=None
+    )
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode
