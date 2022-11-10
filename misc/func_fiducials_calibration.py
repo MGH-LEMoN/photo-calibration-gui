@@ -6,6 +6,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+import pathlib
 
 
 class SplitArgs(argparse.Action):
@@ -138,7 +139,13 @@ def fiducials_calibration(args):
     kp_template = kp_tmp
     des_template = des_tmp
 
-    model_file = os.path.join(args.out_dir, "calibration_file")
+    args.out_file = pathlib.Path(args.out_file)
+
+    if args.out_file.parent.is_dir():
+        model_file = args.out_file
+    else:
+        args.out_file.parent.mkdir(exist_ok=True)
+        model_file = args.out_file
 
     np.savez(
         model_file,
@@ -185,10 +192,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--in_img", type=str, dest="in_img", default=None)
-    parser.add_argument("--points", nargs="+", dest="pos_tuple", action=SplitArgs)
-    parser.add_argument("--width", nargs="?", type=float, dest="e1", default=None)
-    parser.add_argument("--height", nargs="?", type=float, dest="e2", default=None)
-    parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
+    parser.add_argument(
+        "--points", nargs="+", dest="pos_tuple", action=SplitArgs
+    )
+    parser.add_argument(
+        "--width", nargs="?", type=float, dest="e1", default=None
+    )
+    parser.add_argument(
+        "--height", nargs="?", type=float, dest="e2", default=None
+    )
+    parser.add_argument("--out_file", type=str, dest="out_file", default=None)
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)
@@ -205,8 +218,8 @@ if __name__ == "__main__":
             "272",
             "--height",
             "272",
-            "--out_dir",
-            f"{PROJ_DIR}/misc/cal_output",
+            "--out_file",
+            f"{PROJ_DIR}/misc/cal_output/test",
         ]
 
     args = parser.parse_args()
@@ -218,4 +231,4 @@ if __name__ == "__main__":
     #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG \
     #   --points 22 17 40 9 478 25 492 9 18 465 30 451 462 472 478 460 \
     #   --width 272 --height 272 \
-    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_output/
+    #   --out_file /space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_output/test
