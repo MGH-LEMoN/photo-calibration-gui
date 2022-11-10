@@ -19,7 +19,7 @@ class SplitArgs(argparse.Action):
             yield lst[i : i + chunk_size]
 
     def split(self, input_string):
-        input_string = list(map(float, input_string[0].split()))
+        input_string = list(map(float, input_string))
         coords = list(self.chunks(input_string, 2))
         if len(coords[-1]) != 2:
             print("Invalid coordinates")
