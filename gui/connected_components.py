@@ -9,7 +9,7 @@ from skimage.io import imread
 from PIL import Image, ImageTk
 from skimage.measure import label as bwlabel
 
-from utils import set_root_position
+from scripts.utils import set_root_position
 
 
 class Application(Frame):

@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import screeninfo
 from PIL import Image, ImageTk, UnidentifiedImageError
-from utils import set_root_position
+from scripts.utils import set_root_position
 
 
 class Application(Frame):

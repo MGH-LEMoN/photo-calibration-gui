@@ -6,8 +6,8 @@ from tkinter import filedialog, messagebox, ttk
 
 import cv2
 import numpy as np
-from registration import registration
-from utils import set_root_position
+from scripts.registration import registration
+from scripts.utils import set_root_position
 
 
 class Application(Frame):

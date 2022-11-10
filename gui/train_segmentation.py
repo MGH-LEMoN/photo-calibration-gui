@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
 
-from train_segmentation_model import train_segmentation
+from scripts.train_segmentation_model import train_segmentation
 
 
 class Application(Frame):
