@@ -105,7 +105,7 @@ def fiducials_calibration(args):
     new_im_width = int(width * scale_down_factor_sift)
     new_im_height = int(height * scale_down_factor_sift)
 
-    img_sift = img.resize((new_im_width, new_im_height), Image.ANTIALIAS)
+    img_sift = img.resize((new_im_width, new_im_height), Image.Resampling.LANCZOS)
 
     centers = centers * scale_down_factor_sift
     radii = (

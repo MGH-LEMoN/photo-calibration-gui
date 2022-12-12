@@ -49,8 +49,13 @@ def fiducials_correction(args):
 
     input_images = sorted(glob.glob(os.path.join(input_folder_path, "*.*")))
 
-    horizontal_ruler = cv2.imread("./resources/horizontal.png")
-    vertical_ruler = cv2.imread("./resources/vertical.png")
+    print(os.getcwd())
+    horizontal_ruler = cv2.imread(
+        os.path.join(os.getcwd(), "resources/horizontal.png")
+    )
+    vertical_ruler = cv2.imread(
+        os.path.join(os.getcwd(), "resources/vertical.png")
+    )
 
     for input_image in input_images:
         try:
@@ -87,10 +92,10 @@ if __name__ == "__main__":
     if gettrace():
         sys.argv = [
             "func_fiducials_correction.py",
-            "--in_img",
+            "--in_dir",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_input/",
             "--calibration_file",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/calibration.npz",
+            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_calibration/cal.npz",
             "--out_dir",
             "/space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_output/",
         ]
@@ -102,5 +107,5 @@ if __name__ == "__main__":
     # example call:
     # fspython func_fiducials_correction.py \
     #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_input/ \
-    #   --calibration_file /space/calico/1/users/Harsha/photo-calibration-gui/misc/cal_output/output_npz \
-    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_output/
+    #   --calibration_file /space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_calibration/cal.npz \
+    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_output1/
