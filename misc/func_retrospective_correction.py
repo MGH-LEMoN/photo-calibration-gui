@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 class SplitArgs(argparse.Action):
@@ -44,6 +44,7 @@ def retrospective_correction(args):
 
     # Read the image
     args.img_fullres = Image.open(args.in_img)
+    args.img_fullres = ImageOps.exif_transpose(args.img_fullres)
 
     args.scale_down_factor_screen = 1
 
