@@ -39,9 +39,7 @@ def registration(
     # Resize image so smaller dimension is sift_res
     factor = sift_res / np.min(target.shape)
     new_target_size = np.round(np.flip(target.shape) * factor).astype(int)
-    target = cv2.resize(
-        target, dsize=new_target_size, interpolation=cv2.INTER_AREA
-    )
+    target = cv2.resize(target, dsize=new_target_size, interpolation=cv2.INTER_AREA)
 
     # Detect keypoints with SIFT
     sift = cv2.SIFT_create()
@@ -79,12 +77,12 @@ def registration(
     # Match and extract points
     matches = bf.match(des_template, des_target)
     matches = sorted(matches, key=lambda x: x.distance)
-    template_pts = np.float32(
-        [kp_template[m.queryIdx].pt for m in matches]
-    ).reshape(-1, 1, 2)
-    target_pts = np.float32(
-        [kp_target[m.trainIdx].pt for m in matches]
-    ).reshape(-1, 1, 2)
+    template_pts = np.float32([kp_template[m.queryIdx].pt for m in matches]).reshape(
+        -1, 1, 2
+    )
+    target_pts = np.float32([kp_target[m.trainIdx].pt for m in matches]).reshape(
+        -1, 1, 2
+    )
 
     # Fit transform and apply to corner
     M, _ = cv2.findHomography(template_pts, target_pts, cv2.RANSAC, 2.0)
@@ -156,14 +154,17 @@ def registration(
     ref_coords[3, 0, 0] = np.round(true_width / reference_pixel_size) - 1
     ref_coords[3, 0, 1] = np.round(true_height / reference_pixel_size) - 1
 
+    PAD = 10.0 / reference_pixel_size  # pad 10mm (in pixels)
+    ref_coords = ref_coords + PAD
+
     # We compute the final perspective transform
     M2, _ = cv2.findHomography(centers_target_reordered, ref_coords)
     deformed_image = cv2.warpPerspective(
         target,
         M2,
         (
-            ref_coords[1, 0, 0].astype(int) + 1,
-            ref_coords[2, 0, 1].astype(int) + 1,
+            (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
+            (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
         ),
     )
 
