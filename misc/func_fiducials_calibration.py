@@ -105,7 +105,9 @@ def fiducials_calibration(args):
     new_im_width = int(width * scale_down_factor_sift)
     new_im_height = int(height * scale_down_factor_sift)
 
-    img_sift = img.resize((new_im_width, new_im_height), Image.Resampling.LANCZOS)
+    img_sift = img.resize(
+        (new_im_width, new_im_height), Image.Resampling.LANCZOS
+    )
 
     centers = centers * scale_down_factor_sift
     radii = (
@@ -125,7 +127,7 @@ def fiducials_calibration(args):
                 # kp_tmp.append(kp_template[i])
 
                 temp = (
-                    kp_template[i].pt,
+                    *kp_template[i].pt,
                     kp_template[i].size,
                     kp_template[i].angle,
                     kp_template[i].response,
@@ -163,13 +165,13 @@ def fiducials_calibration(args):
         kp = []
         for point in kp_template:
             temp = cv2.KeyPoint(
-                x=point[0][0],
-                y=point[0][1],
-                size=point[1],
-                angle=point[2],
-                response=point[3],
-                octave=point[4],
-                class_id=point[5],
+                x=point[0],
+                y=point[1],
+                size=point[2],
+                angle=point[3],
+                response=point[4],
+                octave=point[5],
+                class_id=point[6],
             )
             kp.append(temp)
 
