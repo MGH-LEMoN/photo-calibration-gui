@@ -19,7 +19,10 @@ class SplitArgs(argparse.Action):
             yield lst[i : i + n]
 
     def split(self, s):
-        s = list(map(float, s))
+        try:
+            s = list(map(float, s))
+        except:
+            s = list(map(float, s[0].split()))
         coords = list(self.chunks(s, 2))
         if len(coords[-1]) != 2:
             print("Invalid coordinates")
@@ -49,12 +52,11 @@ def retrospective_correction(args):
 
     args.scale_down_factor_screen = 1
 
-    if len(args.pos_tuple) == 4:
+    n_points = len(args.pos_tuple)
+
+    if n_points in [3, 4]:
         true_width, true_height = args.e1, args.e2
-    elif len(args.pos_tuple) == 3:
-        true_width, true_height = args.e1, args.e2
-        n_points = 3
-    elif len(args.pos_tuple) == 2:
+    elif n_points == 2:
         # We pretend the user clicked on the 4 corners of the image
         # and make the true_width and true_height proportional to the provided length
         pix_dist = (
@@ -130,24 +132,36 @@ def retrospective_correction(args):
         np.round(true_height / reference_pixel_size) - 1
     )
 
-    # reorder!
-    if n_points == 3:
-        ref_coords = ref_coords_before_reordering[idx[:n_points], :, :]
-
     # Pad
     PAD = 10.0 / reference_pixel_size  # pad 10mm (in pixels)
-    ref_coords = ref_coords + PAD
+    ref_coords = ref_coords_before_reordering + PAD
 
     # We compute the final perspective transform
-    M2, _ = cv2.findHomography(centers_target, ref_coords)
-    args.deformed_image = cv2.warpPerspective(
-        np.asarray(args.img_fullres),
-        M2,
-        (
-            (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
-            (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
-        ),
-    )
+    if n_points == 3:
+        M2 = cv2.getAffineTransform(
+            centers_target.astype(np.float32),
+            ref_coords[idx, :][:n_points, :].astype(np.float32),
+        )
+
+        args.deformed_image = cv2.warpAffine(
+            np.asarray(args.img_fullres),
+            M2,
+            (
+                (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
+                (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
+            ),
+        )
+    else:
+        M2, _ = cv2.findHomography(centers_target, ref_coords[idx, :])
+
+        args.deformed_image = cv2.warpPerspective(
+            np.asarray(args.img_fullres),
+            M2,
+            (
+                (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
+                (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
+            ),
+        )
 
     image_with_ruler = np.zeros(
         (
@@ -187,15 +201,15 @@ if __name__ == "__main__":
         sys.argv = [
             "func_retrospective_correction.py",
             "--in_img",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG",
+            "/space/tuesday/for_jei/17-0333-Image.1.jpg",
             "--points",
-            "431 621 481 621",
+            "1264 312 6036 399 1320 4839 5959 4790",
             "--width",
-            "10",
+            "290",
             "--height",
-            "15",
+            "285",
             "--out_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/",
+            "/space/tuesday/for_jei/",
         ]
 
     args = parser.parse_args()
@@ -204,7 +218,7 @@ if __name__ == "__main__":
 
     # example call:
     # fspython func_retrospective_correction.py \
-    #   --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/photos/2604.01.JPG \
+    #   --in_img /space/tuesday/for_jei/2604.01.JPG \
     #   --points 431 621 481 621 \
     #   --width 10 --height 15 \
-    #   --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/
+    #   --out_dir /space/tuesday/for_jei/
