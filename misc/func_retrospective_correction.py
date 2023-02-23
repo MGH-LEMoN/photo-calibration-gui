@@ -23,6 +23,7 @@ class SplitArgs(argparse.Action):
             s = list(map(float, s))
         except:
             s = list(map(float, s[0].split()))
+
         coords = list(self.chunks(s, 2))
         if len(coords[-1]) != 2:
             print("Invalid coordinates")
@@ -88,8 +89,9 @@ def retrospective_correction(args):
     centers_target = np.array(args.pos_tuple) / args.scale_down_factor_screen
     centers_target = centers_target[:, np.newaxis, :]
 
-    # Now we only have to compute the final transform. The only caveat is the ordering of the corners...
-    # We reorder then to NW, NE, SW, SE
+    # Now we only have to compute the final transform.
+    # The only caveat is the ordering of the corners...
+    # We reorder them to NW, NE, SW, SE
 
     # Compute cost matrix
     costNW = centers_target[:, 0, 0] + centers_target[:, 0, 1]
@@ -140,28 +142,21 @@ def retrospective_correction(args):
     if n_points == 3:
         M2 = cv2.getAffineTransform(
             centers_target.astype(np.float32),
-            ref_coords[idx, :][:n_points, :].astype(np.float32),
+            ref_coords[idx[:n_points], :].astype(np.float32),
         )
-
-        args.deformed_image = cv2.warpAffine(
-            np.asarray(args.img_fullres),
-            M2,
-            (
-                (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
-                (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
-            ),
-        )
+        warp_function = cv2.warpAffine
     else:
         M2, _ = cv2.findHomography(centers_target, ref_coords[idx, :])
+        warp_function = cv2.warpPerspective
 
-        args.deformed_image = cv2.warpPerspective(
-            np.asarray(args.img_fullres),
-            M2,
-            (
-                (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
-                (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
-            ),
-        )
+    args.deformed_image = warp_function(
+        np.asarray(args.img_fullres),
+        M2,
+        (
+            (PAD + ref_coords[1, 0, 0]).astype(int) + 1,
+            (PAD + ref_coords[2, 0, 1]).astype(int) + 1,
+        ),
+    )
 
     image_with_ruler = np.zeros(
         (
@@ -194,14 +189,13 @@ if __name__ == "__main__":
     parser.add_argument("--height", nargs="?", type=float, dest="e2", default=None)
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
-    # If running the code in debug mode
+    # If running the code in debug mode (vs-code)
     gettrace = getattr(sys, "gettrace", None)
-
     if gettrace():
         sys.argv = [
             "func_retrospective_correction.py",
             "--in_img",
-            "/space/tuesday/for_jei/17-0333-Image.1.jpg",
+            "/cluster/vive/UW_photo_recon/Photo_data/17-0333/17-0333_Images/17-0333-Image.1.jpg",
             "--points",
             "1264 312 6036 399 1320 4839 5959 4790",
             "--width",
@@ -209,16 +203,9 @@ if __name__ == "__main__":
             "--height",
             "285",
             "--out_dir",
-            "/space/tuesday/for_jei/",
+            "/tmp",
         ]
 
     args = parser.parse_args()
 
     retrospective_correction(args)
-
-    # example call:
-    # fspython func_retrospective_correction.py \
-    #   --in_img /space/tuesday/for_jei/2604.01.JPG \
-    #   --points 431 621 481 621 \
-    #   --width 10 --height 15 \
-    #   --out_dir /space/tuesday/for_jei/

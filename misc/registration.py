@@ -46,7 +46,6 @@ def registration(
     kp_target, des_target = sift.detectAndCompute(target, None)
 
     if DEBUG:
-
         import matplotlib.pyplot as plt
 
         kp_im_template = template.copy()

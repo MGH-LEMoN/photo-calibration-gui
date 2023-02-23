@@ -18,7 +18,11 @@ class SplitArgs(argparse.Action):
             yield lst[i : i + n]
 
     def split(self, s):
-        s = list(map(float, s))
+        try:
+            s = list(map(float, s))
+        except:
+            s = list(map(float, s[0].split()))
+
         coords = list(self.chunks(s, 4))
         if len(coords[-1]) != 4:
             print("Invalid coordinates")
@@ -107,20 +111,13 @@ if __name__ == "__main__":
             "--rectangle_coordinates",
             "431 559 477 602 1131 565 1180 628 1788 572 1841 641",
             "--in_img",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/2604.01_deformed.JPG",
+            "/cluster/vive/MGH_photo_recon/2604_whole/deformed/2604.01_deformed.JPG",
             "--in_mask",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/masked/2604.01_deformed_masked.png",
+            "/cluster/vive/MGH_photo_recon/2604_whole/masked/2604.01_deformed_masked.png",
             "--out_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/connected_components",
+            "/tmp",
         ]
 
     args = parser.parse_args()
 
     create_mask(args)
-
-    # example call:
-    # fspython misc/func_connected_components.py \
-    # --rectangle_coordinates 431 559 477 602 1131 565 1180 628 1788 572 1841 641 \
-    # --in_img /space/calico/1/users/Harsha/photo-calibration-gui/misc/deformed/2604.01_deformed.JPG \
-    # --in_mask /space/calico/1/users/Harsha/photo-calibration-gui/misc/masked/2604.01_deformed_masked.png \
-    # --out_dir /space/calico/1/users/Harsha/photo-calibration-gui/misc/connected_components
