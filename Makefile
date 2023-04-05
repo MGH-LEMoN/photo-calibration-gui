@@ -25,7 +25,7 @@ fiducials_calibration:
 ## fiducials_correction: example commandline to run/test fiducials_correction.py
 fiducials_correction:
 	fspython misc/func_fiducials_correction.py \
-      --in_img misc/fiducials_correction_input/ \
+      --in_dir misc/fiducials_correction_input/ \
       --calibration_file /tmp/cal.npz \
       --out_dir /tmp
 
