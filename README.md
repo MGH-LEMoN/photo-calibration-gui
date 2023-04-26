@@ -13,10 +13,3 @@ source /path/to/virtual/environment/name/bin/activate
 pip install -U pip
 pip install -r requirements.txt
 ```
-
-### Running a GUI
-```
-export PYTHONPATH=<path_on_computer>/photo-calibration-gui
-
-python gui/<name_of_gui>.py
-```
