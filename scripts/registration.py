@@ -39,14 +39,15 @@ def registration(
     # Resize image so smaller dimension is sift_res
     factor = sift_res / np.min(target.shape)
     new_target_size = np.round(np.flip(target.shape) * factor).astype(int)
-    target = cv2.resize(target, dsize=new_target_size, interpolation=cv2.INTER_AREA)
+    target = cv2.resize(
+        target, dsize=new_target_size, interpolation=cv2.INTER_AREA
+    )
 
     # Detect keypoints with SIFT
     sift = cv2.SIFT_create()
     kp_target, des_target = sift.detectAndCompute(target, None)
 
     if DEBUG:
-
         import matplotlib.pyplot as plt
 
         kp_im_template = template.copy()
@@ -64,12 +65,17 @@ def registration(
             flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
         )
 
-        plt.figure(), plt.imshow(kp_im_template, aspect="equal"), plt.title(
-            "Key points in template image"
-        ), plt.show(block=False)
-        plt.figure(), plt.imshow(kp_im_target, aspect="equal"), plt.title(
-            "Key points in target image"
-        ), plt.show(block=False)
+        plt.figure()
+        plt.imshow(kp_im_template, aspect="equal")
+        plt.title("Key points in template image")
+        plt.show(block=False)
+        cv2.imwrite("/tmp/kp_template.png", kp_im_template)
+
+        plt.figure()
+        plt.imshow(kp_im_target, aspect="equal")
+        plt.title("Key points in target image")
+        plt.show(block=False)
+        cv2.imwrite("/tmp/kp_target.png", kp_im_target)
 
     # Keypoint Matching
     bf = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True)  # Brute force is fine
@@ -77,12 +83,12 @@ def registration(
     # Match and extract points
     matches = bf.match(des_template, des_target)
     matches = sorted(matches, key=lambda x: x.distance)
-    template_pts = np.float32([kp_template[m.queryIdx].pt for m in matches]).reshape(
-        -1, 1, 2
-    )
-    target_pts = np.float32([kp_target[m.trainIdx].pt for m in matches]).reshape(
-        -1, 1, 2
-    )
+    template_pts = np.float32(
+        [kp_template[m.queryIdx].pt for m in matches]
+    ).reshape(-1, 1, 2)
+    target_pts = np.float32(
+        [kp_target[m.trainIdx].pt for m in matches]
+    ).reshape(-1, 1, 2)
 
     # Fit transform and apply to corner
     M, _ = cv2.findHomography(template_pts, target_pts, cv2.RANSAC, 2.0)
@@ -98,15 +104,21 @@ def registration(
             None,
             flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS,
         )
-        plt.figure(), plt.imshow(img, aspect="equal"), plt.title(
-            "Matching key points"
-        ), plt.show(block=False)
+        plt.figure()
+        plt.imshow(img, aspect="equal")
+        plt.title("Matching key points")
+        plt.show(block=False)
+        cv2.imwrite("/tmp/matching_kp.png", img)
+
         img = cv2.polylines(
             target, [np.int32(centers_target)], True, 55, 3, cv2.LINE_AA
         )
-        plt.figure(), plt.imshow(img, aspect="equal"), plt.title(
-            "Detected corners"
-        ), plt.show(block=False)
+
+        plt.figure()
+        plt.imshow(img, aspect="equal")
+        plt.title("Detected corners")
+        plt.show(block=False)
+        cv2.imwrite("/tmp/corners.png", img)
 
     # Now that we have detected the centers of the corners, we go back to the original coordinates
     centers_target = centers_target / factor
@@ -181,7 +193,7 @@ def registration(
 
         image_with_ruler[
             0 : deformed_image.shape[0], 0 : deformed_image.shape[1], :
-        ] = cv2.cvtColor(deformed_image, cv2.COLOR_RGB2BGR)
+        ] = deformed_image
         image_with_ruler[
             deformed_image.shape[0] :, 0 : -vertical_ruler.shape[1], :
         ] = horizontal_ruler[:, 0 : deformed_image.shape[1], :]
@@ -194,6 +206,7 @@ def registration(
     cv2.imwrite(output_image, deformed_image)
 
     if DEBUG:
-        plt.figure(), plt.imshow(deformed_image, aspect="equal"), plt.title(
-            "Perspective / pixel size corrected image"
-        ), plt.show(block=False)
+        plt.figure()
+        plt.imshow(deformed_image, aspect="equal")
+        plt.title("Perspective / pixel size corrected image")
+        plt.show(block=False)
