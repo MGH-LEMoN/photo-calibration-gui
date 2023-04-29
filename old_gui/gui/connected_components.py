@@ -5,11 +5,11 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 
 import numpy as np
-from skimage.io import imread
 from PIL import Image, ImageTk
+from skimage.io import imread
 from skimage.measure import label as bwlabel
 
-from scripts.utils import set_root_position
+from old_gui.backend.functions import set_root_position
 
 
 class Application(Frame):
@@ -33,9 +33,7 @@ class Application(Frame):
         canvas_width, canvas_height = 600, 250
         set_root_position(self.master, canvas_width, canvas_height)
 
-        self.canvas1 = Canvas(
-            self.master, width=canvas_width, height=canvas_height
-        )
+        self.canvas1 = Canvas(self.master, width=canvas_width, height=canvas_height)
 
         word_pos = [
             (int(canvas_width // 2), 20),
@@ -76,9 +74,7 @@ class Application(Frame):
         set_root_position(self.master, canvas_width, canvas_height)
 
         # Create canvas for widgets
-        self.canvas2 = Canvas(
-            self.master, width=canvas_width, height=canvas_height
-        )
+        self.canvas2 = Canvas(self.master, width=canvas_width, height=canvas_height)
         self.canvas2.pack()
 
         # Specify input images directory
@@ -100,9 +96,7 @@ class Application(Frame):
         self.input_lbl_val = Label(
             self.master, text="-", fg="red", font=("Cambria", 10)
         )
-        self.canvas2.create_window(
-            10, 30, anchor=tk.W, window=self.input_lbl_val
-        )
+        self.canvas2.create_window(10, 30, anchor=tk.W, window=self.input_lbl_val)
 
         # Specify directory with masks
         mask_lbl = Label(
@@ -120,12 +114,8 @@ class Application(Frame):
         )
         self.canvas2.create_window(500, 55, anchor=tk.W, window=mask_lbl_btn)
 
-        self.mask_lbl_val = Label(
-            self.master, text="-", fg="red", font=("Cambria", 10)
-        )
-        self.canvas2.create_window(
-            10, 70, anchor=tk.W, window=self.mask_lbl_val
-        )
+        self.mask_lbl_val = Label(self.master, text="-", fg="red", font=("Cambria", 10))
+        self.canvas2.create_window(10, 70, anchor=tk.W, window=self.mask_lbl_val)
 
         # Specify directory to store updated masks
         output_lbl = Label(
@@ -146,9 +136,7 @@ class Application(Frame):
         self.output_lbl_val = Label(
             self.master, text="-", fg="red", font=("Cambria", 10)
         )
-        self.canvas2.create_window(
-            10, 120, anchor=tk.W, window=self.output_lbl_val
-        )
+        self.canvas2.create_window(10, 120, anchor=tk.W, window=self.output_lbl_val)
 
         upld_btn = Button(
             self.master,
@@ -327,18 +315,14 @@ class Application(Frame):
         self.input_folder = filedialog.askdirectory()
         self.input_lbl_val["text"] = self.input_folder
 
-        self.input_images = sorted(
-            glob.glob(os.path.join(self.input_folder, "*.*"))
-        )
+        self.input_images = sorted(glob.glob(os.path.join(self.input_folder, "*.*")))
 
     def select_mask_folder(self):
         """Mask directory selection"""
         self.mask_folder = filedialog.askdirectory()
         self.mask_lbl_val["text"] = self.mask_folder
 
-        self.mask_images = sorted(
-            glob.glob(os.path.join(self.mask_folder, "*.*"))
-        )
+        self.mask_images = sorted(glob.glob(os.path.join(self.mask_folder, "*.*")))
 
     def select_output_folder(self):
         """Output directory selection to save the masks"""

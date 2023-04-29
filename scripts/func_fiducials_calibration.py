@@ -1,12 +1,15 @@
+"""
+This script is called by the freesurfer GUI command- fiducials_calibration 
+"""
 import argparse
 import os
+import pathlib
 import sys
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import pathlib
 
 
 class SplitArgs(argparse.Action):
@@ -88,7 +91,7 @@ def calculate_centers_and_radii(mouse_clicks):
 
 
 def fiducials_calibration(args):
-    """This function performs the calibration/registration and close the GUI automatically"""
+    """This function performs prospective calibration"""
     true_w, true_h = args.e1, args.e2
 
     # extract centers and radius

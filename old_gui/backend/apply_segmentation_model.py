@@ -7,9 +7,7 @@ from functions import compute_gaussian_scaled_space_features
 from sklearn.pipeline import make_pipeline
 
 
-def apply_segmentation(input_image_dir=None,
-                       output_mask_dir=None,
-                       model_file=None):
+def apply_segmentation(input_image_dir=None, output_mask_dir=None, model_file=None):
 
     # input_image_dir = '/autofs/cluster/vive/UW_photo_recon/code/fiducialsMGH/test_images/ADRC 2531/'
     # output_mask_dir = '/tmp/masks/'
@@ -27,7 +25,7 @@ def apply_segmentation(input_image_dir=None,
         clf = make_pipeline(aux[0], aux[1])
 
         # Read list of images / masks
-        im_files = sorted(glob.glob(input_image_dir + '/*.*'))
+        im_files = sorted(glob.glob(input_image_dir + "/*.*"))
         n_im = len(im_files)
 
         # Create output directory if needed
@@ -46,37 +44,41 @@ def apply_segmentation(input_image_dir=None,
 
         # Gather features
         for i in range(n_im):
-            print('Working on image %d of %d' % (i + 1, n_im))
+            print("Working on image %d of %d" % (i + 1, n_im))
 
             # Read images and resize
             I = cv2.imread(im_files[i])
-            Ir = cv2.resize(I,
-                            None,
-                            fx=1.0 / rescaling_factor,
-                            fy=1.0 / rescaling_factor,
-                            interpolation=cv2.INTER_AREA)
+            Ir = cv2.resize(
+                I,
+                None,
+                fx=1.0 / rescaling_factor,
+                fy=1.0 / rescaling_factor,
+                interpolation=cv2.INTER_AREA,
+            )
 
             # Compute features
             feats = compute_gaussian_scaled_space_features(
-                Ir, feat_max_deriv_order, feat_scales)
-            feats = feats.reshape(
-                (feats.shape[0] * feats.shape[1], feats.shape[2]))
+                Ir, feat_max_deriv_order, feat_scales
+            )
+            feats = feats.reshape((feats.shape[0] * feats.shape[1], feats.shape[2]))
 
             # Predict with SVM
             yhat = np.array(clf.predict(feats))
             Mhat = yhat.reshape((Ir.shape[0], Ir.shape[1]))
-            Mfull = cv2.resize(Mhat.astype(float), (I.shape[1], I.shape[0]),
-                               interpolation=cv2.INTER_LINEAR)
+            Mfull = cv2.resize(
+                Mhat.astype(float),
+                (I.shape[1], I.shape[0]),
+                interpolation=cv2.INTER_LINEAR,
+            )
             Mfull[Mfull > 0.5] = 255
 
             # Write output
             fname = os.path.basename(im_files[i])
             name = os.path.splitext(fname)[0]
-            output_filename = os.path.join(output_mask_dir,
-                                           name + '.automask.png')
+            output_filename = os.path.join(output_mask_dir, name + ".automask.png")
 
             cv2.imwrite(output_filename, np.uint8(Mfull))
-        print('All done')
+        print("All done")
         return 1
     except Exception as e:
         return 0

@@ -1,5 +1,32 @@
 import cv2
 import numpy as np
+import screeninfo
+
+
+def get_monitor_from_coord(x, y):
+    monitors = screeninfo.get_monitors()
+
+    for m in reversed(monitors):
+        if m.x <= x <= m.width + m.x and m.y <= y <= m.height + m.y:
+            return m
+    return monitors[0]
+
+
+def get_screen_dimensions(root):
+    # Get the screen which contains top
+    current_screen = get_monitor_from_coord(root.winfo_x(), root.winfo_y())
+
+    return current_screen.width, current_screen.height
+
+
+def set_root_position(root, width, height):
+    screen_width, screen_height = get_screen_dimensions(root)
+
+    # Position the canvas at the center of the screen
+    x = (screen_width // 2) - (width // 2)
+    y = (screen_height // 2) - (height // 2)
+
+    root.geometry(f"+{x}+{y}")
 
 
 # Computes Gaussian scale spaece features of an image (RGB or gray), up to a maximum order, given a vector of scales
@@ -31,9 +58,12 @@ def compute_gaussian_scaled_space_features(image, max_order, vector_of_scales):
         if vector_of_scales[s] == 0:
             im_blur = image.astype(float)
         else:
-            im_blur = cv2.GaussianBlur(image.astype(float), [0, 0],
-                                       sigmaX=vector_of_scales[s],
-                                       sigmaY=vector_of_scales[s])
+            im_blur = cv2.GaussianBlur(
+                image.astype(float),
+                [0, 0],
+                sigmaX=vector_of_scales[s],
+                sigmaY=vector_of_scales[s],
+            )
 
         for order in range(max_order + 1):
             for ox in range(order + 1):

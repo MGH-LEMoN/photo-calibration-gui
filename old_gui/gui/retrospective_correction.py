@@ -9,7 +9,7 @@ import numpy as np
 import screeninfo
 from PIL import Image, ImageOps, ImageTk, UnidentifiedImageError
 
-from scripts.utils import set_root_position
+from old_gui.backend.functions import set_root_position
 
 
 class Application(Frame):

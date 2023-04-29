@@ -1,3 +1,7 @@
+"""
+This script is called by the freesurfer GUI command- fiducials_correction 
+"""
+
 import argparse
 import glob
 import os
@@ -9,7 +13,7 @@ from registration import registration
 
 
 def fiducials_correction(args):
-    """Perform correction of photos with fiducials"""
+    """Perform prospective correction of photos with fiducials"""
 
     npz_file_path = args.npz_file
     input_folder_path = args.in_dir

@@ -1,4 +1,6 @@
-"""Helper function to convert binary mask to connected components."""
+"""Helper function to convert binary mask to connected components.
+Called by freesurfer GUI command connected_components before func_connected_components
+"""
 import glob
 import os
 import sys

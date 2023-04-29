@@ -1,3 +1,7 @@
+"""
+This script is called by the freesurfer GUI command- retrospective_correction 
+"""
+
 import argparse
 import os
 import sys
@@ -32,7 +36,7 @@ class SplitArgs(argparse.Action):
 
 
 def retrospective_correction(args):
-    """This function performs the registration and close the GUI automatically"""
+    """This function performs retrospective correction"""
 
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir, exist_ok=True)

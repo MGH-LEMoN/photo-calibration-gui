@@ -1,3 +1,6 @@
+"""
+This script is called by the freesurfer GUI command- connected_components 
+"""
 import argparse
 import os
 import sys
