@@ -1,5 +1,7 @@
 """
-This script is called by the freesurfer GUI command- connected_components 
+This script (althought not exactly) is called by the freesurfer GUI command- connected_components.
+
+Note: See notes in func_mask_to_cc.py 
 """
 import argparse
 import os
@@ -101,9 +103,15 @@ if __name__ == "__main__":
         dest="rect_list",
         action=SplitArgs,
     )
-    parser.add_argument("--in_img", type=file_path, dest="current_image", default=None)
-    parser.add_argument("--in_mask", type=file_path, dest="current_mask", default=None)
-    parser.add_argument("--out_dir", type=dir_path, dest="out_dir", default=None)
+    parser.add_argument(
+        "--in_img", type=file_path, dest="current_image", default=None
+    )
+    parser.add_argument(
+        "--in_mask", type=file_path, dest="current_mask", default=None
+    )
+    parser.add_argument(
+        "--out_dir", type=dir_path, dest="out_dir", default=None
+    )
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)

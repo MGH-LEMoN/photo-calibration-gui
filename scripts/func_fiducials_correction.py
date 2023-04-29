@@ -53,8 +53,12 @@ def fiducials_correction(args):
 
     input_images = sorted(glob.glob(os.path.join(input_folder_path, "*.*")))
 
-    horizontal_ruler = cv2.imread(os.path.join(os.getcwd(), "resources/horizontal.png"))
-    vertical_ruler = cv2.imread(os.path.join(os.getcwd(), "resources/vertical.png"))
+    horizontal_ruler = cv2.imread(
+        os.path.join(os.getcwd(), "resources/horizontal.png")
+    )
+    vertical_ruler = cv2.imread(
+        os.path.join(os.getcwd(), "resources/vertical.png")
+    )
 
     for input_image in input_images:
         try:
@@ -80,7 +84,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--in_dir", type=str, dest="in_dir", default=None)
-    parser.add_argument("--calibration_file", type=str, dest="npz_file", default=None)
+    parser.add_argument(
+        "--calibration_file", type=str, dest="npz_file", default=None
+    )
     parser.add_argument("--out_dir", type=str, dest="out_dir", default=None)
 
     # If running the code in debug mode
@@ -90,11 +96,11 @@ if __name__ == "__main__":
         sys.argv = [
             "func_fiducials_correction.py",
             "--in_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/fiducials_correction_input/",
+            f"{os.getenv('PYTHONPATH')}/misc/fiducials_correction_input/",
             "--calibration_file",
-            "/tmp/cal.npz",
+            f"{os.getenv('PYTHONPATH')}/misc/fiducials_calibration/cal.npz",
             "--out_dir",
-            "/tmp",
+            f"{os.getenv('PYTHONPATH')}/misc/fiducials_correction_output/",
         ]
 
     args = parser.parse_args()

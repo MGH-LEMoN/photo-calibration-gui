@@ -1,5 +1,8 @@
-"""Helper function to convert binary mask to connected components.
+"""
+Helper function to convert binary mask to connected components
+
 Called by freesurfer GUI command connected_components before func_connected_components
+
 """
 import glob
 import os
@@ -60,9 +63,9 @@ if __name__ == "__main__":
         sys.argv = [
             "func_mask_to_cc.py",
             "--in_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/masked",
+            f"/cluster/vive/MGH_photo_recon/2604_whole/masked/masked",
             "--out_dir",
-            "/space/calico/1/users/Harsha/photo-calibration-gui/misc/cc_temp/",
+            "/tmp/cc_temp/",
         ]
 
     parsed_args = parser.parse_args()

@@ -112,7 +112,9 @@ def fiducials_calibration(args):
     new_im_width = int(width * scale_down_factor_sift)
     new_im_height = int(height * scale_down_factor_sift)
 
-    img_sift = img.resize((new_im_width, new_im_height), Image.Resampling.LANCZOS)
+    img_sift = img.resize(
+        (new_im_width, new_im_height), Image.Resampling.LANCZOS
+    )
 
     centers = centers * scale_down_factor_sift
     radii = (
@@ -196,20 +198,25 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--in_img", type=str, dest="in_img", default=None)
-    parser.add_argument("--points", nargs="+", dest="pos_tuple", action=SplitArgs)
-    parser.add_argument("--width", nargs="?", type=float, dest="e1", default=None)
-    parser.add_argument("--height", nargs="?", type=float, dest="e2", default=None)
+    parser.add_argument(
+        "--points", nargs="+", dest="pos_tuple", action=SplitArgs
+    )
+    parser.add_argument(
+        "--width", nargs="?", type=float, dest="e1", default=None
+    )
+    parser.add_argument(
+        "--height", nargs="?", type=float, dest="e2", default=None
+    )
     parser.add_argument("--out_file", type=str, dest="out_file", default=None)
 
     # If running the code in debug mode
     gettrace = getattr(sys, "gettrace", None)
 
     if gettrace():
-        PROJ_DIR = "/space/calico/1/users/Harsha/photo-calibration-gui"
         sys.argv = [
             "func_fiducials_calibration.py",
             "--in_img",
-            f"{PROJ_DIR}/misc/fiducials_calibration/prospective_without_tissue.jpg",
+            f"{os.getenv('PYTHONPATH')}/misc/fiducials_calibration/prospective_without_tissue.jpg",
             "--points",
             "22 17 40 9 478 25 492 9 18 465 30 451 462 472 478 460",
             "--width",
@@ -217,7 +224,7 @@ if __name__ == "__main__":
             "--height",
             "272",
             "--out_file",
-            "/tmp/cal",
+            f"{os.getenv('PYTHONPATH')}/misc/fiducials_calibration/cal",
         ]
 
     args = parser.parse_args()

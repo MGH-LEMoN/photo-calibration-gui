@@ -60,3 +60,10 @@ connected_components:
 		--in_img /cluster/vive/MGH_photo_recon/2604_whole/deformed/2604.01_deformed.JPG \
 		--in_mask /cluster/vive/MGH_photo_recon/2604_whole/photos/masked/2604.01_deformed_masked.png \
 		--out_dir /tmp
+
+
+## mask_to_cc:: example to convert masks to connected components
+mask_to_cc:
+	fspython func_mask_to_cc.py \
+	--in_dir  /cluster/vive/MGH_photo_recon/2604_whole/photos/masked \
+    --out_dir /tmp/cc_temp
